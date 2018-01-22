@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+
+  "name": "JustWatch Plugin",
+  "description": "Adds JustWatch info on IMDb",
+  "version": "1.0",
+
+  "permissions": [
+    "https://api.justwatch.com/"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": ["http://*.imdb.com/title/*"],
+      "js": ["main.js"]
+    }
+  ]
+}
