@@ -1,0 +1,48 @@
+.justwatch {
+  background: #0c151d;
+}
+
+.justwatch .title {
+    color:#F8D150;
+    font-weight: bold;
+}
+
+.justwatch .justwatch-offers ul {
+  list-style: none;
+  min-height: 6.5rem;
+  background-color: #EFEFEF;
+}
+
+.justwatch .justwatch-offers ul::before {
+    content: attr(data-title);
+    background: #e6e6e6;
+    color: #6d6d6d;
+    width: 2rem;
+    /*transform: rotate(-90deg);
+    transform-origin: left bottom 0;*/
+    font-weight: bold;
+    text-align: center;
+    float: left;
+    padding: 10px;
+}
+
+.justwatch .justwatch-offers ul li {
+  min-height: 5.6rem;
+  width: 3.6rem;
+  display: inline-block;
+}
+
+.justwatch .justwatch-offers ul li .provider{
+  height: 3.6rem;
+  width: 3.6rem;
+  /*border: 1px solid #6d6d6d;*/
+  border-radius: 11px;
+  display: block;
+}
+
+.justwatch .justwatch-offers ul li .provider img{
+  height: 3.6rem;
+  width: auto;
+  border-radius: 11px;
+}
+
