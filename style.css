@@ -1,48 +1,61 @@
 .justwatch {
-  background: #0c151d;
 }
 
 .justwatch .title {
-    color:#F8D150;
-    font-weight: bold;
+  background: #0c151d;
+  color:#F8D150;
+  font-weight: bold;
+  padding: 0.4rem 1rem;
+  display: block;
+  margin-bottom: 0.2rem;
 }
 
 .justwatch .justwatch-offers ul {
   list-style: none;
-  min-height: 6.5rem;
   background-color: #EFEFEF;
 }
 
 .justwatch .justwatch-offers ul::before {
-    content: attr(data-title);
-    background: #e6e6e6;
-    color: #6d6d6d;
-    width: 2rem;
-    /*transform: rotate(-90deg);
-    transform-origin: left bottom 0;*/
-    font-weight: bold;
-    text-align: center;
-    float: left;
-    padding: 10px;
+  content: attr(data-title);
+  background: #e6e6e6;
+  color: #6d6d6d;
+  width: 2rem;
+  /*transform: rotate(-90deg);
+  transform-origin: left bottom 0;*/
+  font-weight: bold;
+  text-align: center;
+  float: left;
+  padding: 10px;
 }
 
 .justwatch .justwatch-offers ul li {
-  min-height: 5.6rem;
-  width: 3.6rem;
+  min-height: 5rem;
+  width: 3.2rem;
   display: inline-block;
 }
 
 .justwatch .justwatch-offers ul li .provider{
-  height: 3.6rem;
-  width: 3.6rem;
+  height: 3.2rem;
+  width: 32rem;
   /*border: 1px solid #6d6d6d;*/
   border-radius: 11px;
   display: block;
 }
 
 .justwatch .justwatch-offers ul li .provider img{
-  height: 3.6rem;
+  height: 3.2rem;
   width: auto;
   border-radius: 11px;
 }
-
+.justwatch .justwatch-offers ul li .presentation{
+  font-size: 75%;
+  font-weight: bold;
+  text-transform: uppercase;
+  color:rgb(165, 134, 0); /*#F8D150;*/
+  display: block;
+}
+.justwatch .justwatch-offers ul li .price{
+  font-size: 0.7rem;
+  font-weight: bold;
+  display: block;
+}

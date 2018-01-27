@@ -1,6 +1,6 @@
 console.log('imdb');
 
-var reviewBar = document.getElementsByClassName('titleReviewBar');
+var reviewBar = document.getElementsByClassName('plot_summary_wrapper');
 var div = document.createElement("div");
 div.classList.add('justwatch');
 
@@ -85,23 +85,24 @@ function justWatchOffersHTML(offers){
       }
 
       if (offer.monetization_type == 'flatrate') {
-        
-
         offersFlat += '<li><a href="' + offer.urls.standard_web 
-          + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="price">' 
+          + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
           + offer.presentation_type + '</span></a></li>\n';
       } else if (offer.monetization_type == 'rent') {
         offersRent += '<li><a href="' + offer.urls.standard_web 
-          + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="price">' 
-          + offer.presentation_type + ' ' + offer.retail_price+''+offer.currency+'</span></a></li>\n';
+          + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
+          + offer.presentation_type + '</span>  <span class="price">' 
+          + offer.retail_price + ' ' + price[offer.currency] + '</span></a></li>\n';
       } else if (offer.monetization_type == 'buy') {
         offersBuy += '<li><a href="' + offer.urls.standard_web  
-          + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="price">' 
-          + offer.presentation_type + ' ' + offer.retail_price+''+offer.currency+'</span></a></li>\n';
+          + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
+          + offer.presentation_type + '</span>  <span class="price">' 
+          + offer.retail_price + ' ' + price[offer.currency] + '</span></a></li>\n';
       } else {
         offersOther += '<li><a href="' + offer.urls.standard_web 
-          + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="price">' 
-          + offer.monetization_type + ' ' + offer.presentation_type+' '+offer.retail_price+''+offer.currency+'</span></a></li>\n';
+          + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
+          + offer.monetization_type + ' ' + offer.presentation_type+'</span>  <span class="price">' 
+          + offer.retail_price+''+price[offer.currency]+'</span></a></li>\n';
       }
     }
     offersData = 
@@ -132,6 +133,13 @@ var providers = {
   35: 'rakuten-tv', //wuaki
   62: 'atres-player',
   63: 'filmin',
+  64: 'filmin-plus',
   68: 'microsoft-store',
-  118: 'hbo'
+  118: 'hbo', //hboespana
+  119: 'amazon-prime-video',
+  149: 'movistar-plus'
+}
+
+var price = {
+  'EUR': '€'
 }
