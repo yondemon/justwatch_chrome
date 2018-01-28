@@ -1,40 +1,56 @@
-console.log('imdb');
 
-var reviewBar = document.getElementsByClassName('plot_summary_wrapper');
-var div = document.createElement("div");
-div.classList.add('justwatch');
+var reviewBar;
+var titleFull = "";
 
-var titleFull = document.getElementsByTagName('h1')[0].innerText;
-console.log(titleFull);
-var titleRegexp = /(.*)\s\((.*)\)/;
-var matches;
-matches = titleRegexp.exec(titleFull);
-var title = matches[1];
-var year = parseInt(matches[2]);
+if(location.hostname.match('imdb')) {
+  console.log('imdb');
+  reviewBar = document.getElementsByClassName('plot_summary_wrapper')[0];
+  titleFull = document.getElementsByTagName('h1')[0].innerText;
+} else if(location.hostname.match('rottentomatoes')) {
+  console.log('rottentomatoes');
+  //reviewBar = document.getElementById('topSection');
+  reviewBar = document.getElementById('watch-it-now');
+  titleFull = document.getElementsByTagName('h1')[0].innerText;
+} else {
+  console.log('error');
+}
 
-var xhr = new XMLHttpRequest();
-// TODO: Localization
-var url = 'https://api.justwatch.com/titles/es_ES/popular';
-xhr.open("POST", url, true);
-xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+if (typeof reviewBar !== 'undefined') {
+  console.log(titleFull);
 
-xhr.onreadystatechange = function() {
-  if (xhr.readyState == 4) {
-    var resp = JSON.parse(xhr.responseText);
+  var div = document.createElement("div");
+  div.classList.add('justwatch');
 
-    if (resp.total_results > 0) {
-      console.log(resp.total_results + ' results');
+  var titleRegexp = /(.*)\s\((.*)\)/;
+  var matches;
+  matches = titleRegexp.exec(titleFull);
+  var title = matches[1];
+  var year = parseInt(matches[2]);
 
-      justWatchPrintPanel(resp, div);      
+  var xhr = new XMLHttpRequest();
+  // TODO: Localization
+  var url = 'https://api.justwatch.com/titles/es_ES/popular';
+  xhr.open("POST", url, true);
+  xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4) {
+      var resp = JSON.parse(xhr.responseText);
+
+      if (resp.total_results > 0) {
+        console.log(resp.total_results + ' results');
+
+        justWatchPrintPanel(resp, div);      
+      }
     }
-  }
-};
+  };
 
-var query = {"query":title};
-xhr.send( JSON.stringify( query ) );
+  var query = {"query":title};
+  xhr.send( JSON.stringify( query ) );
 
-//reviewBar[0].appendChild(div);
-reviewBar[0].parentNode.insertBefore(div, reviewBar[0].nextSibling);
+  //reviewBar[0].appendChild(div);
+  reviewBar.parentNode.insertBefore(div, reviewBar.nextSibling);
+
+}
 
 
 
