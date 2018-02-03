@@ -1,6 +1,11 @@
 .justwatch {
 }
 
+.justwatch p {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
 .justwatch .title {
   background: #0c151d;
   color:#F8D150;

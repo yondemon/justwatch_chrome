@@ -11,6 +11,12 @@ if(location.hostname.match('imdb')) {
   //reviewBar = document.getElementById('topSection');
   reviewBar = document.getElementById('watch-it-now');
   titleFull = document.getElementsByTagName('h1')[0].innerText;
+} else if(location.hostname.match('tv.com')) {
+  console.log('tv.com');
+  //reviewBar = document.getElementById('topSection');
+  reviewBar = document.getElementsByClassName('show_stats _clearfix')[0];
+  titleFull = document.getElementsByTagName('h1')[0].innerText;
+  //.querySelector('[itemprop="name"]').innerText;
 } else {
   console.log('error');
 }
@@ -24,58 +30,120 @@ if (typeof reviewBar !== 'undefined') {
   var titleRegexp = /(.*)\s\((.*)\)/;
   var matches;
   matches = titleRegexp.exec(titleFull);
-  var title = matches[1];
-  var year = parseInt(matches[2]);
+  
+  var title, year; 
+  if(matches !== null) {
+    title = matches[1];
+    year = parseInt(matches[2]);
+  } else {
+    title = titleFull;
+    year = null;
+  }
 
-  var xhr = new XMLHttpRequest();
-  // TODO: Localization
-  var url = 'https://api.justwatch.com/titles/es_ES/popular';
-  xhr.open("POST", url, true);
-  xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState == 4) {
-      var resp = JSON.parse(xhr.responseText);
+  if (title !== null) {
+    var xhr = new XMLHttpRequest();
+    // TODO: Localization
+    var localization = 'es_ES';
+    //var localization: 'en_US';
+    var url = 'https://api.justwatch.com/titles/'+localization+'/popular';
 
-      if (resp.total_results > 0) {
-        console.log(resp.total_results + ' results');
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
+        var resp = JSON.parse(xhr.responseText);
 
-        justWatchPrintPanel(resp, div);      
+        if (resp.total_results > 0) {
+          console.log(resp.total_results + ' results');
+
+          justWatchPrintPanel(resp, div);      
+        }
       }
-    }
-  };
+    };
 
-  var query = {"query":title};
-  xhr.send( JSON.stringify( query ) );
+    var query = {"query":title};
+    xhr.send( JSON.stringify( query ) );
 
-  //reviewBar[0].appendChild(div);
-  reviewBar.parentNode.insertBefore(div, reviewBar.nextSibling);
+    //reviewBar[0].appendChild(div);
+    reviewBar.parentNode.insertBefore(div, reviewBar.nextSibling);
+  }
 
 }
 
 
+var noMatchesP = document.createElement("p");
+noMatchesP.setAttribute('id','justwatch-nomatches');
+noMatchesP.classList.add('message');
+noMatchesP.innerHTML = 'NO MATCHES';
 
 
 function justWatchPrintPanel(response, div){  
-  var offersDiv;
+  var offersDiv,
+    nomatches = true;
 
-  if(response.total_results === 1){
-    item = response.items[0];
+  div.appendChild( document.createRange().createContextualFragment( justWatchPanelTitleHTML() ) );
+
+  div.appendChild( noMatchesP );
+
+  if(response.total_results > 0){
     
-    div.appendChild( document.createRange().createContextualFragment( justWatchPanelTitleHTML(item) ) );
-    div.appendChild( justWatchOffersHTML(item.offers) );
+    if(response.total_results === 1){
+      item = response.items[0];
+      justWatchSetPanelTitleURL(item);
+      console.log(item);    
+      
+      nomatches = false;
+      justWatchRemoveNoMatches();
 
-  }  else {
-    for(item of response.items){
-      if( item.original_release_year == year ){
-        div.appendChild( document.createRange().createContextualFragment( justWatchPanelTitleHTML(item) ) );
-        div.appendChild( justWatchOffersHTML(item.offers) );
+      div.appendChild( justWatchOffersHTML(item.offers) );
+
+    }  else {
+      console.log(response.items);
+      var done = false;
+      for(item of response.items){
+        if(!done && year != null && item.original_release_year == year){
+          justWatchSetPanelTitleURL(item);
+          console.log(item);    
+    
+          nomatches = false;
+          justWatchRemoveNoMatches();
+
+          div.appendChild( justWatchOffersHTML(item.offers) );
+          done = true;
+        }
       }
     }
-  } 
+
+    if(nomatches){
+      noMatchesP.innerHTML += 'NO PERFECT MATHCES [but '+ response.total_results +' results]';
+
+      for(let [index,item] of response.items.entries() ){
+        var liElement = document.createElement('li');
+        var resultlink = document.createElement('a');
+        resultlink.innerHTML = item.original_title + "&nbsp;("+ item.original_release_year+")";
+        resultlink.setAttribute('href','http://www.justwatch.com' + item.full_path);
+        liElement.appendChild( resultlink );
+        noMatchesP.appendChild( liElement );
+      }
+    }
+  }
 }
 
-function justWatchPanelTitleHTML(item){
-    return '<a class="title" href="http://www.justwatch.com' + item.full_path + '">JustWatch: '+titleFull+'</a>';
+function justWatchPanelTitleHTML(){
+    return '<span id="justwatch-title" class="title">JustWatch: '+titleFull+'</span>';
+}
+function justWatchSetPanelTitleURL(item){
+    var originalSpan = document.getElementById('justwatch-title');
+    var replacementA = document.createElement("a");
+    replacementA.innerHTML = originalSpan.innerHTML;
+    replacementA.setAttribute('href','http://www.justwatch.com' + item.full_path);
+    replacementA.setAttribute('id','justwatch-title');
+    replacementA.classList.add('title');
+    originalSpan.parentNode.replaceChild(replacementA,originalSpan);
+}
+
+function justWatchRemoveNoMatches(){
+  noMatchesP.parentNode.removeChild(noMatchesP);
 }
 
 function justWatchOffersHTML(offers){
@@ -87,7 +155,8 @@ function justWatchOffersHTML(offers){
     offersRent = "",
     offersBuy = "",
     offersOther = "";
-  if (offers.length > 0){
+  
+  if (typeof offers !== 'undefined' && offers.length > 0){
     for(offer of offers) {
       console.log(offer);
       var domainString = offer.urls.standard_web.replace('http://','').replace('https://','').replace('www.','').split(/[/?#]/)[0];
@@ -127,7 +196,7 @@ function justWatchOffersHTML(offers){
       ((offersBuy.length > 0)?'<ul data-title="Buy">' + offersBuy + '</ul>':'') +
       ((offersOther.length > 0)?'<ul data-title="-">' + offersOther + '</ul>':'');
 } else {
-  offersData = "<p>NO OFFERS</p>";
+  offersData = '<p class="message">NO OFFERS</p>';
 }
   offersDiv.innerHTML = offersData.trim();
 
@@ -144,18 +213,25 @@ function providerLogoURL(provider_id){
 var providers = {
   2: 'apple-itunes',
   3: 'google-play-movies',
+  7: 'vudu',
   8: 'netflix',
+  9: 'amazon',
+  10: 'amazon-instant-video',
+  15: 'hulu',
   18: 'playstation',
+  34: 'epix',
   35: 'rakuten-tv', //wuaki
   62: 'atres-player',
   63: 'filmin',
   64: 'filmin-plus',
   68: 'microsoft-store',
+  105: 'fandangonow',
   118: 'hbo', //hboespana
   119: 'amazon-prime-video',
   149: 'movistar-plus'
 }
 
 var price = {
-  'EUR': '€'
+  'EUR': '€',
+  'USD': '$'
 }
