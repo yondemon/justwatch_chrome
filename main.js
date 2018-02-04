@@ -23,6 +23,7 @@ if(location.hostname.match('imdb')) {
   ldJSON = document.querySelectorAll('script[type="application/ld+json"]')[0].innerText;
   ldJSON = ldJSON.replace(/(\r\n|\n|\r)/gm,"");
   var showdata = JSON.parse(ldJSON.trim());
+  console.log(showdata);
   startDate = new Date(showdata.startDate);
   
 } else {
@@ -110,8 +111,13 @@ function justWatchPrintPanel(response, div){
     }  else {
       console.log(response.items);
       var done = false;
+
       for(item of response.items){
-        if(!done && year != null && item.original_release_year == year){
+        
+        if(!done 
+          && year != null 
+          && (item.original_release_year == year ||  item.original_release_year == year + 1) ){
+          
           justWatchSetPanelTitleURL(item);
           console.log(item);    
     
