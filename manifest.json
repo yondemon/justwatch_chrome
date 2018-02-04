@@ -11,7 +11,7 @@
 
   "content_scripts": [
     {
-      "matches": ["http://*.imdb.com/title/*","https://www.rottentomatoes.com/m/*","http://www.tv.com/shows/*"],
+      "matches": ["http://*.imdb.com/title/*","https://www.rottentomatoes.com/m/*","http://www.tv.com/shows/*","http://www.sensacine.com/peliculas/*"],
       "js": ["main.js"],
       "css": [ "style.css" ]
     }

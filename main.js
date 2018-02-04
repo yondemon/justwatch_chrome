@@ -25,6 +25,11 @@ if(location.hostname.match('imdb')) {
   var showdata = JSON.parse(ldJSON.trim());
   console.log(showdata);
   startDate = new Date(showdata.startDate);
+} else if(location.hostname.match('sensacine.com')) {
+  console.log('sensacine.com');
+  //reviewBar = document.getElementById('topSection');
+  reviewBar = document.getElementsByClassName('card-movie-overview')[0];
+  titleFull = document.getElementsByClassName('titlebar-title')[0].innerText;
   
 } else {
   console.log('error');
@@ -117,7 +122,7 @@ function justWatchPrintPanel(response, div){
         if(!done 
           && year != null 
           && (item.original_release_year == year ||  item.original_release_year == year + 1) ){
-          
+
           justWatchSetPanelTitleURL(item);
           console.log(item);    
     
