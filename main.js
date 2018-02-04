@@ -1,6 +1,8 @@
 
 var reviewBar;
 var titleFull = "";
+var ldJSON;
+var startDate = null;
 
 if(location.hostname.match('imdb')) {
   console.log('imdb');
@@ -17,12 +19,17 @@ if(location.hostname.match('imdb')) {
   reviewBar = document.getElementsByClassName('show_stats _clearfix')[0];
   titleFull = document.getElementsByTagName('h1')[0].innerText;
   //.querySelector('[itemprop="name"]').innerText;
+
+  ldJSON = document.querySelectorAll('script[type="application/ld+json"]')[0].innerText;
+  ldJSON = ldJSON.replace(/(\r\n|\n|\r)/gm,"");
+  var showdata = JSON.parse(ldJSON.trim());
+  startDate = new Date(showdata.startDate);
+  
 } else {
   console.log('error');
 }
 
 if (typeof reviewBar !== 'undefined') {
-  console.log(titleFull);
 
   var div = document.createElement("div");
   div.classList.add('justwatch');
@@ -35,6 +42,9 @@ if (typeof reviewBar !== 'undefined') {
   if(matches !== null) {
     title = matches[1];
     year = parseInt(matches[2]);
+  } else if(startDate != null) {
+    title = titleFull;
+    year = startDate.getFullYear();
   } else {
     title = titleFull;
     year = null;
@@ -115,7 +125,7 @@ function justWatchPrintPanel(response, div){
     }
 
     if(nomatches){
-      noMatchesP.innerHTML += 'NO PERFECT MATHCES [but '+ response.total_results +' results]';
+      noMatchesP.innerHTML = 'NO PERFECT MATCHES [but '+ response.total_results +' results]';
 
       for(let [index,item] of response.items.entries() ){
         var liElement = document.createElement('li');
