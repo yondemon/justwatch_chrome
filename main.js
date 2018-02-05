@@ -1,13 +1,20 @@
 
 var reviewBar;
-var titleFull = "";
-var ldJSON;
-var startDate = null;
+
+var titleFull = "",
+  title, year; 
+
+var ldJSON,
+  startDate = null;
 
 if(location.hostname.match('imdb')) {
   console.log('imdb');
   reviewBar = document.getElementsByClassName('plot_summary_wrapper')[0];
-  titleFull = document.getElementsByTagName('h1')[0].innerText;
+  //titleFull = document.getElementsByTagName('h1')[0].innerText;
+  titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
+
+  //year = "";
+
 } else if(location.hostname.match('rottentomatoes')) {
   console.log('rottentomatoes');
   //reviewBar = document.getElementById('topSection');
@@ -40,11 +47,12 @@ if (typeof reviewBar !== 'undefined') {
   var div = document.createElement("div");
   div.classList.add('justwatch');
 
-  var titleRegexp = /(.*)\s\((.*)\)/;
+  var titleRegexp = /(.*)\s\(.*?([\d]{4}).*?\)/;
   var matches;
   matches = titleRegexp.exec(titleFull);
   
-  var title, year; 
+  console.log(matches);
+
   if(matches !== null) {
     title = matches[1];
     year = parseInt(matches[2]);
@@ -124,7 +132,7 @@ function justWatchPrintPanel(response, div){
           && (item.original_release_year == year ||  item.original_release_year == year + 1) ){
 
           justWatchSetPanelTitleURL(item);
-          console.log(item);    
+          //console.log(item);    
     
           nomatches = false;
           justWatchRemoveNoMatches();
@@ -151,7 +159,7 @@ function justWatchPrintPanel(response, div){
 }
 
 function justWatchPanelTitleHTML(){
-    return '<span id="justwatch-title" class="title">JustWatch: '+titleFull+'</span>';
+    return '<span id="justwatch-title" class="title">JustWatch: <span id="justwatch-title-full">'+titleFull+'</span></span>';
 }
 function justWatchSetPanelTitleURL(item){
     var originalSpan = document.getElementById('justwatch-title');
@@ -161,6 +169,8 @@ function justWatchSetPanelTitleURL(item){
     replacementA.setAttribute('id','justwatch-title');
     replacementA.classList.add('title');
     originalSpan.parentNode.replaceChild(replacementA,originalSpan);
+
+    document.getElementById('justwatch-title-full').innerHTML = item.original_title + ' (' + item.original_release_year + ')';    
 }
 
 function justWatchRemoveNoMatches(){
@@ -238,6 +248,7 @@ var providers = {
   8: 'netflix',
   9: 'amazon',
   10: 'amazon-instant-video',
+  11: 'mubi',
   15: 'hulu',
   18: 'playstation',
   34: 'epix',
@@ -246,6 +257,7 @@ var providers = {
   63: 'filmin',
   64: 'filmin-plus',
   68: 'microsoft-store',
+  100: 'guidedoc',
   105: 'fandangonow',
   118: 'hbo', //hboespana
   119: 'amazon-prime-video',
