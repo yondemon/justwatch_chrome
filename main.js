@@ -1,4 +1,3 @@
-
 var reviewBar;
 
 var titleFull = "",
@@ -8,21 +7,17 @@ var ldJSON,
   startDate = null;
 
 if(location.hostname.match('imdb')) {
-  console.log('imdb');
+  //console.log('imdb');
   reviewBar = document.getElementsByClassName('plot_summary_wrapper')[0];
   //titleFull = document.getElementsByTagName('h1')[0].innerText;
   titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
 
-  //year = "";
-
 } else if(location.hostname.match('rottentomatoes')) {
-  console.log('rottentomatoes');
-  //reviewBar = document.getElementById('topSection');
+  //console.log('rottentomatoes');
   reviewBar = document.getElementById('watch-it-now');
   titleFull = document.getElementsByTagName('h1')[0].innerText;
 } else if(location.hostname.match('tv.com')) {
-  console.log('tv.com');
-  //reviewBar = document.getElementById('topSection');
+  //console.log('tv.com');
   reviewBar = document.getElementsByClassName('show_stats _clearfix')[0];
   titleFull = document.getElementsByTagName('h1')[0].innerText;
   //.querySelector('[itemprop="name"]').innerText;
@@ -30,13 +25,31 @@ if(location.hostname.match('imdb')) {
   ldJSON = document.querySelectorAll('script[type="application/ld+json"]')[0].innerText;
   ldJSON = ldJSON.replace(/(\r\n|\n|\r)/gm,"");
   var showdata = JSON.parse(ldJSON.trim());
-  console.log(showdata);
   startDate = new Date(showdata.startDate);
 } else if(location.hostname.match('sensacine.com')) {
-  console.log('sensacine.com');
-  //reviewBar = document.getElementById('topSection');
+  //console.log('sensacine.com');
   reviewBar = document.getElementsByClassName('card-movie-overview')[0];
   titleFull = document.getElementsByClassName('titlebar-title')[0].innerText;
+  tempDate = document.getElementsByClassName('date')[0].innerText;
+
+  var matches = /(\d){4}/.exec(tempDate);
+  if( matches != null){
+    year = matches[0];
+  }
+  console.log(year);
+
+} else if(location.hostname.match('filmaffinity.com')) {
+  //console.log('filmaffinity.com');
+  reviewBar = document.getElementsByClassName('movie-info')[0];
+  //titleFull = document.querySelectorAll('span[itemprop="name"]')[0].innerText;
+  titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  
+
+} else if(location.hostname.match('cinefilica.es')) {
+  console.log('cinefilica.es');
+  reviewBar = document.getElementById('ko-bind');
+  titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
+  //titleFull = document.querySelectorAll('span[itemprop="name"]')[0].innerText;
+  //year = document.querySelectorAll('#movie-header h4')[0].innerText;
   
 } else {
   console.log('error');
@@ -58,7 +71,10 @@ if (typeof reviewBar !== 'undefined') {
     year = parseInt(matches[2]);
   } else if(startDate != null) {
     title = titleFull;
+    console.log(startDate);
     year = startDate.getFullYear();
+  } else if( typeof year != 'undefined' ) {
+    title = titleFull;
   } else {
     title = titleFull;
     year = null;
@@ -129,7 +145,7 @@ function justWatchPrintPanel(response, div){
         
         if(!done 
           && year != null 
-          && (item.original_release_year == year ||  item.original_release_year == year + 1) ){
+          && (item.original_release_year == year) ){
 
           justWatchSetPanelTitleURL(item);
           //console.log(item);    

@@ -18,13 +18,14 @@
 .justwatch .justwatch-offers ul {
   list-style: none;
   background-color: #EFEFEF;
+  padding-left: 0px;
 }
 
 .justwatch .justwatch-offers ul::before {
   content: attr(data-title);
   background: #e6e6e6;
   color: #6d6d6d;
-  width: 2rem;
+  width: 60px;
   /*transform: rotate(-90deg);
   transform-origin: left bottom 0;*/
   font-weight: bold;

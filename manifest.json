@@ -11,7 +11,14 @@
 
   "content_scripts": [
     {
-      "matches": ["http://*.imdb.com/title/*","https://www.rottentomatoes.com/m/*","http://www.tv.com/shows/*","http://www.sensacine.com/peliculas/*"],
+      "matches": [
+        "http://*.imdb.com/title/*",
+        "https://www.rottentomatoes.com/m/*",
+        "http://www.tv.com/shows/*",
+        "http://www.sensacine.com/peliculas/*",
+        "https://www.filmaffinity.com/*/film*",
+        "http://cinefilica.es/peliculas/*"
+      ],
       "js": ["main.js"],
       "css": [ "style.css" ]
     }
