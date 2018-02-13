@@ -1,3 +1,4 @@
+console.log("JustWatch");
 var reviewBar;
 
 var titleFull = "",
@@ -6,6 +7,12 @@ var titleFull = "",
 var ldJSON,
   startDate = null;
 
+var noMatchesP = document.createElement("p");
+  noMatchesP.setAttribute('id','justwatch-nomatches');
+  noMatchesP.classList.add('message');
+  noMatchesP.innerHTML = 'NO MATCHES';
+
+
 if(location.hostname.match('imdb')) {
   //console.log('imdb');
   reviewBar = document.getElementsByClassName('plot_summary_wrapper')[0];
@@ -13,14 +20,13 @@ if(location.hostname.match('imdb')) {
   titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
 
 } else if(location.hostname.match('rottentomatoes')) {
-  //console.log('rottentomatoes');
+  console.log('rottentomatoes');
   reviewBar = document.getElementById('watch-it-now');
   titleFull = document.getElementsByTagName('h1')[0].innerText;
 } else if(location.hostname.match('tv.com')) {
   //console.log('tv.com');
   reviewBar = document.getElementsByClassName('show_stats _clearfix')[0];
   titleFull = document.getElementsByTagName('h1')[0].innerText;
-  //.querySelector('[itemprop="name"]').innerText;
 
   ldJSON = document.querySelectorAll('script[type="application/ld+json"]')[0].innerText;
   ldJSON = ldJSON.replace(/(\r\n|\n|\r)/gm,"");
@@ -41,16 +47,26 @@ if(location.hostname.match('imdb')) {
 } else if(location.hostname.match('filmaffinity.com')) {
   //console.log('filmaffinity.com');
   reviewBar = document.getElementsByClassName('movie-info')[0];
-  //titleFull = document.querySelectorAll('span[itemprop="name"]')[0].innerText;
   titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  
+
+} else if(location.hostname.match('fotogramas.es')) {
+  console.log('fotogramas.es');
+  reviewBar = document.getElementsByClassName('ficha')[0];
+  titleFull = document.querySelectorAll('h1[itemprop="name"]')[0].innerText;  
+  year = document.querySelectorAll('time[itemprop="dateCreated"]')[0].getAttribute('datetime');
 
 } else if(location.hostname.match('cinefilica.es')) {
   console.log('cinefilica.es');
   reviewBar = document.getElementById('ko-bind');
   titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
+  
+} else if(location.hostname.match('ecartelera.com')) {
+  console.log('ecartelera.com');
+  reviewBar = document.getElementById('scorebox');
+  titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
   //titleFull = document.querySelectorAll('span[itemprop="name"]')[0].innerText;
   //year = document.querySelectorAll('#movie-header h4')[0].innerText;
-  
+
 } else {
   console.log('error');
 }
@@ -95,6 +111,7 @@ if (typeof reviewBar !== 'undefined') {
 
         if (resp.total_results > 0) {
           console.log(resp.total_results + ' results');
+          console.log(resp);
 
           justWatchPrintPanel(resp, div);      
         }
@@ -111,10 +128,6 @@ if (typeof reviewBar !== 'undefined') {
 }
 
 
-var noMatchesP = document.createElement("p");
-noMatchesP.setAttribute('id','justwatch-nomatches');
-noMatchesP.classList.add('message');
-noMatchesP.innerHTML = 'NO MATCHES';
 
 
 function justWatchPrintPanel(response, div){  
@@ -130,7 +143,7 @@ function justWatchPrintPanel(response, div){
     if(response.total_results === 1){
       item = response.items[0];
       justWatchSetPanelTitleURL(item);
-      console.log(item);    
+      //console.log(item);    
       
       nomatches = false;
       justWatchRemoveNoMatches();
@@ -138,7 +151,7 @@ function justWatchPrintPanel(response, div){
       div.appendChild( justWatchOffersHTML(item.offers) );
 
     }  else {
-      console.log(response.items);
+      //console.log(response.items);
       var done = false;
 
       for(item of response.items){
@@ -205,7 +218,7 @@ function justWatchOffersHTML(offers){
   
   if (typeof offers !== 'undefined' && offers.length > 0){
     for(offer of offers) {
-      console.log(offer);
+      //console.log(offer);
       var domainString = offer.urls.standard_web.replace('http://','').replace('https://','').replace('www.','').split(/[/?#]/)[0];
       var logo = '';
       var logoURL = providerLogoURL(offer.provider_id);
@@ -267,8 +280,10 @@ var providers = {
   11: 'mubi',
   15: 'hulu',
   18: 'playstation',
+  //27: 'hbo', // USA
   34: 'epix',
   35: 'rakuten-tv', //wuaki
+  //37: 'showtime', // USA
   62: 'atres-player',
   63: 'filmin',
   64: 'filmin-plus',
