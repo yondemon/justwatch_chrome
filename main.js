@@ -1,8 +1,11 @@
 console.log("JustWatch");
 var reviewBar;
 
+var debug = false;
+
 var titleFull = "",
-  title, year; 
+  title, year,
+  type; 
 
 var ldJSON,
   startDate = null;
@@ -12,37 +15,66 @@ var noMatchesP = document.createElement("p");
   noMatchesP.classList.add('message');
   noMatchesP.innerHTML = 'NO MATCHES';
 
+if(document.querySelectorAll('*[itemtype="http://schema.org/TVSeries"]').length > 0){
+  type = "show";
+} else if(document.querySelectorAll('*[itemtype="http://schema.org/Movie"]').length > 0) {
+  type = "movie";
+}
+
+ldJSON = document.querySelectorAll('script[type="application/ld+json"]');
+if(ldJSON.length > 0) {
+  ldJSON = ldJSON[0].innerText;
+  ldJSON = ldJSON.replace(/(\r\n|\n|\r)/gm,"");
+  var showdata = JSON.parse(ldJSON.trim());
+  startDate = new Date(showdata.startDate);
+
+  if(showdata['@type'] == "TVSeries"){
+    type = "show";
+  } else if(showdata['@type'] == "Movie") {
+    type = "movie";
+  }
+
+  title = showdata['name'];
+
+  if(debug) console.log(showdata);
+}
+
+
 
 if(location.hostname.match('imdb')) {
   //console.log('imdb');
   reviewBar = document.getElementsByClassName('plot_summary_wrapper')[0];
-  //titleFull = document.getElementsByTagName('h1')[0].innerText;
   titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
 
 } else if(location.hostname.match('rottentomatoes')) {
-  console.log('rottentomatoes');
+  //console.log('rottentomatoes');  
+  // HAS LDJSON
+  // 
   reviewBar = document.getElementById('watch-it-now');
   titleFull = document.getElementsByTagName('h1')[0].innerText;
+
 } else if(location.hostname.match('tv.com')) {
   //console.log('tv.com');
+  // HAS LDJSON
   reviewBar = document.getElementsByClassName('show_stats _clearfix')[0];
   titleFull = document.getElementsByTagName('h1')[0].innerText;
 
-  ldJSON = document.querySelectorAll('script[type="application/ld+json"]')[0].innerText;
-  ldJSON = ldJSON.replace(/(\r\n|\n|\r)/gm,"");
-  var showdata = JSON.parse(ldJSON.trim());
-  startDate = new Date(showdata.startDate);
+  year = extractYear(document.getElementsByClassName('tagline')[0].innerText);
+
 } else if(location.hostname.match('sensacine.com')) {
   //console.log('sensacine.com');
-  reviewBar = document.getElementsByClassName('card-movie-overview')[0];
-  titleFull = document.getElementsByClassName('titlebar-title')[0].innerText;
-  tempDate = document.getElementsByClassName('date')[0].innerText;
+  if(location.pathname.match('series')) {
+    type = "show";
+    reviewBar = document.getElementsByClassName('module-actionbar')[0];
+    titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
 
-  var matches = /(\d){4}/.exec(tempDate);
-  if( matches != null){
-    year = matches[0];
+  } else {
+    type = "movie";
+    reviewBar = document.getElementsByClassName('card-movie-overview')[0];
+    titleFull = document.getElementsByClassName('titlebar-title')[0].innerText;
+
+    year = extractYear(document.getElementsByClassName('date')[0].innerText);
   }
-  console.log(year);
 
 } else if(location.hostname.match('filmaffinity.com')) {
   //console.log('filmaffinity.com');
@@ -50,18 +82,18 @@ if(location.hostname.match('imdb')) {
   titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  
 
 } else if(location.hostname.match('fotogramas.es')) {
-  console.log('fotogramas.es');
+  //console.log('fotogramas.es');
   reviewBar = document.getElementsByClassName('ficha')[0];
   titleFull = document.querySelectorAll('h1[itemprop="name"]')[0].innerText;  
   year = document.querySelectorAll('time[itemprop="dateCreated"]')[0].getAttribute('datetime');
 
 } else if(location.hostname.match('cinefilica.es')) {
-  console.log('cinefilica.es');
+  //console.log('cinefilica.es');
   reviewBar = document.getElementById('ko-bind');
   titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
   
 } else if(location.hostname.match('ecartelera.com')) {
-  console.log('ecartelera.com');
+  //console.log('ecartelera.com');
   reviewBar = document.getElementById('scorebox');
   titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
   //titleFull = document.querySelectorAll('span[itemprop="name"]')[0].innerText;
@@ -80,14 +112,11 @@ if (typeof reviewBar !== 'undefined') {
   var matches;
   matches = titleRegexp.exec(titleFull);
   
-  console.log(matches);
-
   if(matches !== null) {
     title = matches[1];
     year = parseInt(matches[2]);
   } else if(startDate != null) {
     title = titleFull;
-    console.log(startDate);
     year = startDate.getFullYear();
   } else if( typeof year != 'undefined' ) {
     title = titleFull;
@@ -110,15 +139,18 @@ if (typeof reviewBar !== 'undefined') {
         var resp = JSON.parse(xhr.responseText);
 
         if (resp.total_results > 0) {
-          console.log(resp.total_results + ' results');
-          console.log(resp);
-
+          if(debug) console.log(resp.total_results + ' results');
+          if(debug) console.log(resp);
           justWatchPrintPanel(resp, div);      
         }
       }
     };
 
     var query = {"query":title};
+    if(typeof type != 'undefined'){
+      query.content_types = [type];
+    }
+    if(debug) console.log(query);
     xhr.send( JSON.stringify( query ) );
 
     //reviewBar[0].appendChild(div);
@@ -127,8 +159,13 @@ if (typeof reviewBar !== 'undefined') {
 
 }
 
-
-
+function extractYear(string){
+  var matches = /(\d){4}/.exec(string);
+  if( matches != null){
+    return matches[0];
+  }
+  return null;
+}
 
 function justWatchPrintPanel(response, div){  
   var offersDiv,
@@ -143,7 +180,6 @@ function justWatchPrintPanel(response, div){
     if(response.total_results === 1){
       item = response.items[0];
       justWatchSetPanelTitleURL(item);
-      //console.log(item);    
       
       nomatches = false;
       justWatchRemoveNoMatches();
@@ -151,7 +187,6 @@ function justWatchPrintPanel(response, div){
       div.appendChild( justWatchOffersHTML(item.offers) );
 
     }  else {
-      //console.log(response.items);
       var done = false;
 
       for(item of response.items){
@@ -161,7 +196,6 @@ function justWatchPrintPanel(response, div){
           && (item.original_release_year == year) ){
 
           justWatchSetPanelTitleURL(item);
-          //console.log(item);    
     
           nomatches = false;
           justWatchRemoveNoMatches();
@@ -169,11 +203,14 @@ function justWatchPrintPanel(response, div){
           div.appendChild( justWatchOffersHTML(item.offers) );
           done = true;
         }
+
       }
     }
 
     if(nomatches){
       noMatchesP.innerHTML = 'NO PERFECT MATCHES [but '+ response.total_results +' results]';
+
+      div.appendChild( justWatchOffersHTML(response.items[0].offers) );
 
       for(let [index,item] of response.items.entries() ){
         var liElement = document.createElement('li');
@@ -218,7 +255,7 @@ function justWatchOffersHTML(offers){
   
   if (typeof offers !== 'undefined' && offers.length > 0){
     for(offer of offers) {
-      //console.log(offer);
+      if(debug) console.log(offer);
       var domainString = offer.urls.standard_web.replace('http://','').replace('https://','').replace('www.','').split(/[/?#]/)[0];
       var logo = '';
       var logoURL = providerLogoURL(offer.provider_id);
