@@ -1,13 +1,14 @@
 {
   "manifest_version": 2,
 
-  "name": "JustWatch Plugin",
-  "description": "Adds JustWatch info on IMDb, rottentomatoes and a lot of webs with movie databases",
+  "name": "JustWatch Plugin (unofficial)",
+  "description": "Adds JustWatch info on IMDb, rottentomatoes, TV.com and a lot of webs with movie & series databases",
   "version": "1.0",
-  "icons": { 
-           "48": "icon.48.png",
-           "200": "icon.png"
-           },
+  "icons": {
+          "32": "icon.32.png", 
+          "48": "icon.48.png",
+          "200": "icon.png"
+          },
 
   "permissions": [
     "https://api.justwatch.com/"
