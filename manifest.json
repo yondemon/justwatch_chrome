@@ -23,7 +23,9 @@
         "http://www.tv.com/shows/*",
         "http://www.sensacine.com/peliculas/*",
         "https://www.filmaffinity.com/*/film*",
-        "http://cinefilica.es/peliculas/*"
+        "http://www.fotogramas.es/Peliculas/*",
+        "http://cinefilica.es/peliculas/*",
+        "https://www.ecartelera.com/peliculas/*"
       ],
       "js": ["main.js"],
       "css": [ "style.css" ]
