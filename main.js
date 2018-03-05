@@ -31,23 +31,8 @@ document.body.onload = function(){
       }
       console.log("OK l18n set to "+l18n);
       execute();
-    }/*,
-    function(){
-      console.log("error on getting l18n, let's default! "+l18n);
-      execute();
-    }*/
-    );
+    });
 };
-
-function l18nSetup(defaultL18n){
-
-  if(typeof l18n == 'undefined'){
-    l18n = defaultL18n;
-  }
-
-  return l18n;
-}
-
 
 function execute() {
 
@@ -71,6 +56,7 @@ function execute() {
     }
 
     title = showdata['name'];
+    year = extractYear( showdata['datePublished'] );
 
     if(debug) console.log(showdata);
   }
@@ -137,6 +123,14 @@ function execute() {
     titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
     //titleFull = document.querySelectorAll('span[itemprop="name"]')[0].innerText;
     //year = document.querySelectorAll('#movie-header h4')[0].innerText;
+  } else if(location.hostname.match('metacritic.com')) {
+    // HAS LDJSON
+    titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
+    if (type == 'movie') {
+      reviewBar = document.getElementById('nav_to_awards');
+    } else if ( type == 'show' ) {
+      reviewBar = document.getElementsByClassName('product_data_summary')[0];
+    }
 
   } else {
     console.log('error');
@@ -365,6 +359,7 @@ function providerLogoURL(provider_id){
 var providers = {
   2: 'apple-itunes',
   3: 'google-play-movies',
+  6: 'maxdome', // DE
   7: 'vudu',
   8: 'netflix',
   9: 'amazon',
@@ -376,6 +371,7 @@ var providers = {
   34: 'epix',
   35: 'rakuten-tv', //wuaki
   //37: 'showtime', // USA
+  52: 'cravetv', // CA
   62: 'atres-player',
   63: 'filmin',
   64: 'filmin-plus',
@@ -384,7 +380,11 @@ var providers = {
   105: 'fandangonow',
   118: 'hbo', //hboespana
   119: 'amazon-prime-video',
-  149: 'movistar-plus'
+  140: 'cineplex', // CA
+  146: 'icitoutv', // CA
+  149: 'movistar-plus',
+  169: 'the-movie-network-go', // CA
+  182: 'hollywood-suite', // CA
 }
 
 var price = {

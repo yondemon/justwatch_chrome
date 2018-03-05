@@ -36,20 +36,20 @@
 
 .justwatch .justwatch-offers ul li {
   min-height: 5rem;
-  width: 3.2rem;
+  width: 3.4rem;
   display: inline-block;
 }
 
 .justwatch .justwatch-offers ul li .provider{
-  height: 3.2rem;
-  width: 32rem;
+  height: 3.4rem;
+  width: 3.4rem;
   /*border: 1px solid #6d6d6d;*/
   border-radius: 11px;
   display: block;
 }
 
 .justwatch .justwatch-offers ul li .provider img{
-  height: 3.2rem;
+  height: 3.4rem;
   width: auto;
   border-radius: 11px;
 }

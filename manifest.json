@@ -30,7 +30,8 @@
         "https://www.filmaffinity.com/*/film*",
         "http://www.fotogramas.es/Peliculas/*",
         "http://cinefilica.es/peliculas/*",
-        "https://www.ecartelera.com/peliculas/*"
+        "https://www.ecartelera.com/peliculas/*",
+        "http://www.metacritic.com/movie/*","http://www.metacritic.com/tv/*"
       ],
       "js": ["main.js"],
       "css": [ "style.css" ]
