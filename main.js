@@ -21,6 +21,9 @@ var l18n = 'es_ES';
 
 //document.body.onload = execute();
 document.body.onload = function(){
+
+  console.log('loading l18n');
+
   browser.storage.sync.get('justwatch-l18n', 
     function(value){
       if (typeof value['justwatch-l18n'] != 'undefined'){
@@ -170,7 +173,7 @@ function execute() {
     if (title !== null) {
       var xhr = new XMLHttpRequest();
       
-      var localization = l18n; 'es_ES';
+      var localization = l18n; // 'es_ES';
       //var localization = l18nSetup('es_ES');
       //var localization = l18nSetup('en_US');
       var url = 'https://api.justwatch.com/titles/'+localization+'/popular';
@@ -178,6 +181,8 @@ function execute() {
 
       xhr.open("POST", url, true);
       xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+      xhr.setRequestHeader('User-Agent', 'JustWatch unofficial chrome extension (github.com/yondemon/justwatch_chrome/)');
+
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
           var resp = JSON.parse(xhr.responseText);
@@ -384,5 +389,6 @@ var providers = {
 
 var price = {
   'EUR': '€',
-  'USD': '$'
+  'USD': '$',
+  'CAD': '$'
 }

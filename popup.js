@@ -4,9 +4,25 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('popup loaded');
 
     var dropdownL18n = document.getElementById('select-l18n');
-    console.log(dropdownL18n);
+    //console.log(dropdownL18n);
 
+    countriesLength = countries.length;
+    for (let key in countries) {
+
+        var option = document.createElement("option");
+            option.setAttribute('value',key);
+            option.innerHTML = countries[key];
+        dropdownL18n.append(option);
+    }
     
+    browser.storage.sync.get('justwatch-l18n', 
+        function(value){
+          if (typeof value['justwatch-l18n'] != 'undefined'){
+            l18n = value['justwatch-l18n'];
+          }
+        dropdownL18n.querySelectorAll('option[value="'+l18n+'"]')[0].selected = 'selected';
+      });
+
 
     dropdownL18n.addEventListener('change', () => {
         console.log(dropdownL18n);
@@ -18,25 +34,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.close();
 
+        browser.tabs.reload();
+
         //console.log('execute!');
         //execute();
 
     });
 
-    browser.storage.sync.get('justwatch-l18n', 
-        function(value){
-          if (typeof value['justwatch-l18n'] != 'undefined'){
-            l18n = value['justwatch-l18n'];
-          }
-
-        console.log(l18n);
-
-        //dropdownL18n.getElementsByTagName('option')[l18n].selected = 'selected';
-        dropdownL18n.querySelectorAll('option[value="'+l18n+'"]')[0].selected = 'selected';
-        console.log( dropdownL18n.querySelectorAll('option[value="'+l18n+'"]')[0] );
-
-
-      });
+    
 
 });
 
+var countries = {
+    'en_US' : 'USA',
+    'en_CA' : 'Canada',
+    'es_ES' : 'España',
+    'de_DE' : 'Deutschland'
+}
