@@ -1,4 +1,6 @@
 console.log("JustWatch");
+const browser = window.browser || window.chrome;
+
 var reviewBar;
 
 var debug = true;
@@ -15,158 +17,194 @@ var noMatchesP = document.createElement("p");
   noMatchesP.classList.add('message');
   noMatchesP.innerHTML = 'NO MATCHES';
 
-if(document.querySelectorAll('*[itemtype="http://schema.org/TVSeries"]').length > 0){
-  type = "show";
-} else if(document.querySelectorAll('*[itemtype="http://schema.org/Movie"]').length > 0) {
-  type = "movie";
+var l18n = 'es_ES';
+
+//document.body.onload = execute();
+document.body.onload = function(){
+  browser.storage.sync.get('justwatch-l18n', 
+    function(value){
+      if (typeof value['justwatch-l18n'] != 'undefined'){
+        l18n = value['justwatch-l18n'];
+      }
+      console.log("OK l18n set to "+l18n);
+      execute();
+    }/*,
+    function(){
+      console.log("error on getting l18n, let's default! "+l18n);
+      execute();
+    }*/
+    );
+};
+
+function l18nSetup(defaultL18n){
+
+  if(typeof l18n == 'undefined'){
+    l18n = defaultL18n;
+  }
+
+  return l18n;
 }
 
-ldJSON = document.querySelectorAll('script[type="application/ld+json"]');
-if(ldJSON.length > 0) {
-  ldJSON = ldJSON[0].innerText;
-  ldJSON = ldJSON.replace(/(\r\n|\n|\r)/gm,"");
-  var showdata = JSON.parse(ldJSON.trim());
-  startDate = new Date(showdata.startDate);
 
-  if(showdata['@type'] == "TVSeries"){
+function execute() {
+
+  if(document.querySelectorAll('*[itemtype="http://schema.org/TVSeries"]').length > 0){
     type = "show";
-  } else if(showdata['@type'] == "Movie") {
+  } else if(document.querySelectorAll('*[itemtype="http://schema.org/Movie"]').length > 0) {
     type = "movie";
   }
 
-  title = showdata['name'];
+  ldJSON = document.querySelectorAll('script[type="application/ld+json"]');
+  if(ldJSON.length > 0) {
+    ldJSON = ldJSON[0].innerText;
+    ldJSON = ldJSON.replace(/(\r\n|\n|\r)/gm,"");
+    var showdata = JSON.parse(ldJSON.trim());
+    startDate = new Date(showdata.startDate);
 
-  if(debug) console.log(showdata);
-}
+    if(showdata['@type'] == "TVSeries"){
+      type = "show";
+    } else if(showdata['@type'] == "Movie") {
+      type = "movie";
+    }
 
-if(location.hostname.match('imdb')) {
-  //console.log('imdb');
-  reviewBar = document.getElementsByClassName('plot_summary_wrapper')[0];
-  titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
+    title = showdata['name'];
 
-  tmpYear = document.querySelectorAll('.titleBar *[itemprop="datePublished"]');
-  if( tmpYear.length > 0 ){
-    year = extractYear(tmpYear[0].content);  
+    if(debug) console.log(showdata);
   }
 
-} else if(location.hostname.match('rottentomatoes')) {
-  //console.log('rottentomatoes');  
-  // HAS LDJSON
-  reviewBar = document.getElementById('watch-it-now');
-  titleFull = document.getElementsByTagName('h1')[0].innerText;
-
-} else if(location.hostname.match('tv.com')) {
-  //console.log('tv.com');
-  // HAS LDJSON
-  reviewBar = document.getElementsByClassName('show_stats _clearfix')[0];
-  titleFull = document.getElementsByTagName('h1')[0].innerText;
-
-  year = extractYear(document.getElementsByClassName('tagline')[0].innerText);
-
-} else if(location.hostname.match('sensacine.com')) {
-  //console.log('sensacine.com');
-  if(location.pathname.match('series')) {
-    type = "show";
-    reviewBar = document.getElementsByClassName('module-actionbar')[0];
+  if(location.hostname.match('imdb')) {
+    //console.log('imdb');
+    reviewBar = document.getElementsByClassName('plot_summary_wrapper')[0];
     titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
 
-  } else {
-    type = "movie";
-    reviewBar = document.getElementsByClassName('card-movie-overview')[0];
-    titleFull = document.getElementsByClassName('titlebar-title')[0].innerText;
-
-    year = extractYear(document.getElementsByClassName('date')[0].innerText);
-    yearAlt = extractYear(document.getElementsByTagName('title')[0].innerText);
-  }
-
-} else if(location.hostname.match('filmaffinity.com')) {
-  //console.log('filmaffinity.com');
-  reviewBar = document.getElementsByClassName('movie-info')[0];
-  titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  
-
-} else if(location.hostname.match('fotogramas.es')) {
-  //console.log('fotogramas.es');
-  reviewBar = document.getElementsByClassName('ficha')[0];
-  titleFull = document.querySelectorAll('h1[itemprop="name"]')[0].innerText;  
-  year = document.querySelectorAll('time[itemprop="dateCreated"]')[0].getAttribute('datetime');
-
-} else if(location.hostname.match('cinefilica.es')) {
-  //console.log('cinefilica.es');
-  reviewBar = document.getElementById('ko-bind');
-  titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
-  
-} else if(location.hostname.match('ecartelera.com')) {
-  //console.log('ecartelera.com');
-  reviewBar = document.getElementById('scorebox');
-  titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
-  //titleFull = document.querySelectorAll('span[itemprop="name"]')[0].innerText;
-  //year = document.querySelectorAll('#movie-header h4')[0].innerText;
-
-} else {
-  console.log('error');
-}
-
-if (typeof reviewBar !== 'undefined') {
-
-  var div = document.createElement("div");
-  div.classList.add('justwatch');
-
-  var titleRegexp = /(.*)\s\(.*?([\d]{4}).*?\)/;
-  var matches;
-  matches = titleRegexp.exec(titleFull);
-  
-  if( typeof year != 'undefined' ) {
-    title = titleFull;
-    if(matches !== null) {
-      title = matches[1];
-      yearAlt = parseInt(matches[2]);
-    } 
-  } else if(matches !== null) {
-    title = matches[1];
-    year = parseInt(matches[2]);
-  } else if(startDate != null) {
-    title = titleFull;
-    year = startDate.getFullYear();
-  } else {
-    title = titleFull;
-    year = null;
-  }
-
-  if (debug) console.log('T:'+titleFull +' Y:'+year + ' Y:'+yearAlt);
-  
-  if (title !== null) {
-    var xhr = new XMLHttpRequest();
-    // TODO: Localization
-    var localization = 'es_ES';
-    //var localization: 'en_US';
-    var url = 'https://api.justwatch.com/titles/'+localization+'/popular';
-
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == 4) {
-        var resp = JSON.parse(xhr.responseText);
-
-        if (resp.total_results > 0) {
-          if(debug) console.log(resp.total_results + ' results');
-          if(debug) console.log(resp);
-          justWatchPrintPanel(resp, div);      
-        }
-      }
-    };
-
-    var query = {"query":title};
-    if(typeof type != 'undefined'){
-      query.content_types = [type];
+    tmpYear = document.querySelectorAll('.titleBar *[itemprop="datePublished"]');
+    if( tmpYear.length > 0 ){
+      year = extractYear(tmpYear[0].content);  
     }
-    if(debug) console.log(query);
-    xhr.send( JSON.stringify( query ) );
 
-    //reviewBar[0].appendChild(div);
-    reviewBar.parentNode.insertBefore(div, reviewBar.nextSibling);
+  } else if(location.hostname.match('rottentomatoes')) {
+    //console.log('rottentomatoes');  
+    // HAS LDJSON
+    reviewBar = document.getElementById('watch-it-now');
+    titleFull = document.getElementsByTagName('h1')[0].innerText;
+
+  } else if(location.hostname.match('tv.com')) {
+    //console.log('tv.com');
+    // HAS LDJSON
+    reviewBar = document.getElementsByClassName('show_stats _clearfix')[0];
+    titleFull = document.getElementsByTagName('h1')[0].innerText;
+
+    year = extractYear(document.getElementsByClassName('tagline')[0].innerText);
+
+  } else if(location.hostname.match('sensacine.com')) {
+    //console.log('sensacine.com');
+    if(location.pathname.match('series')) {
+      type = "show";
+      reviewBar = document.getElementsByClassName('module-actionbar')[0];
+      titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
+
+    } else {
+      type = "movie";
+      reviewBar = document.getElementsByClassName('card-movie-overview')[0];
+      titleFull = document.getElementsByClassName('titlebar-title')[0].innerText;
+
+      year = extractYear(document.getElementsByClassName('date')[0].innerText);
+      yearAlt = extractYear(document.getElementsByTagName('title')[0].innerText);
+    }
+
+  } else if(location.hostname.match('filmaffinity.com')) {
+    //console.log('filmaffinity.com');
+    reviewBar = document.getElementsByClassName('movie-info')[0];
+    titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  
+
+  } else if(location.hostname.match('fotogramas.es')) {
+    //console.log('fotogramas.es');
+    reviewBar = document.getElementsByClassName('ficha')[0];
+    titleFull = document.querySelectorAll('h1[itemprop="name"]')[0].innerText;  
+    year = document.querySelectorAll('time[itemprop="dateCreated"]')[0].getAttribute('datetime');
+
+  } else if(location.hostname.match('cinefilica.es')) {
+    //console.log('cinefilica.es');
+    reviewBar = document.getElementById('ko-bind');
+    titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
+    
+  } else if(location.hostname.match('ecartelera.com')) {
+    //console.log('ecartelera.com');
+    reviewBar = document.getElementById('scorebox');
+    titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
+    //titleFull = document.querySelectorAll('span[itemprop="name"]')[0].innerText;
+    //year = document.querySelectorAll('#movie-header h4')[0].innerText;
+
+  } else {
+    console.log('error');
+  }
+
+  if (typeof reviewBar !== 'undefined') {
+
+    var div = document.createElement("div");
+    div.classList.add('justwatch');
+
+    var titleRegexp = /(.*)\s\(.*?([\d]{4}).*?\)/;
+    var matches;
+    matches = titleRegexp.exec(titleFull);
+    
+    if( typeof year != 'undefined' ) {
+      title = titleFull;
+      if(matches !== null) {
+        title = matches[1];
+        yearAlt = parseInt(matches[2]);
+      } 
+    } else if(matches !== null) {
+      title = matches[1];
+      year = parseInt(matches[2]);
+    } else if(startDate != null) {
+      title = titleFull;
+      year = startDate.getFullYear();
+    } else {
+      title = titleFull;
+      year = null;
+    }
+
+    if (debug) console.log('T:'+titleFull +' Y:'+year + ' Y:'+yearAlt);
+    
+    if (title !== null) {
+      var xhr = new XMLHttpRequest();
+      
+      var localization = l18n; 'es_ES';
+      //var localization = l18nSetup('es_ES');
+      //var localization = l18nSetup('en_US');
+      var url = 'https://api.justwatch.com/titles/'+localization+'/popular';
+      if (debug) console.log(url);
+
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+          var resp = JSON.parse(xhr.responseText);
+
+          if (resp.total_results > 0) {
+            if(debug) console.log(resp.total_results + ' results');
+            if(debug) console.log(resp);
+            justWatchPrintPanel(resp, div);      
+          }
+        }
+      };
+
+      var query = {"query":title};
+      if(typeof type != 'undefined'){
+        query.content_types = [type];
+      }
+      if(debug) console.log(query);
+      xhr.send( JSON.stringify( query ) );
+
+      //reviewBar[0].appendChild(div);
+      reviewBar.parentNode.insertBefore(div, reviewBar.nextSibling);
+    }
+
   }
 
 }
+
 
 function extractYear(string){
   var matches = /(\d){4}/.exec(string);

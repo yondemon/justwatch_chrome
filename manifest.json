@@ -11,9 +11,14 @@
           },
 
   "permissions": [
-    "https://api.justwatch.com/"
+    "https://api.justwatch.com/",
+    "storage"
   ],
 
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
 
   "content_scripts": [
     {
