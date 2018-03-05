@@ -1,10 +1,10 @@
 console.log("JustWatch");
 var reviewBar;
 
-var debug = false;
+var debug = true;
 
 var titleFull = "",
-  title, year,
+  title, year, yearAlt,
   type; 
 
 var ldJSON,
@@ -44,7 +44,10 @@ if(location.hostname.match('imdb')) {
   reviewBar = document.getElementsByClassName('plot_summary_wrapper')[0];
   titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
 
-  year = extractYear(document.querySelectorAll('.titleBar *[itemprop="datePublished"]')[0].content);
+  tmpYear = document.querySelectorAll('.titleBar *[itemprop="datePublished"]');
+  if( tmpYear.length > 0 ){
+    year = extractYear(tmpYear[0].content);  
+  }
 
 } else if(location.hostname.match('rottentomatoes')) {
   //console.log('rottentomatoes');  
@@ -73,6 +76,7 @@ if(location.hostname.match('imdb')) {
     titleFull = document.getElementsByClassName('titlebar-title')[0].innerText;
 
     year = extractYear(document.getElementsByClassName('date')[0].innerText);
+    yearAlt = extractYear(document.getElementsByTagName('title')[0].innerText);
   }
 
 } else if(location.hostname.match('filmaffinity.com')) {
@@ -128,8 +132,8 @@ if (typeof reviewBar !== 'undefined') {
     year = null;
   }
 
-  //console.log('T:'+titleFull +' Y:'+year);
-
+  if (debug) console.log('T:'+titleFull +' Y:'+year + ' Y:'+yearAlt);
+  
   if (title !== null) {
     var xhr = new XMLHttpRequest();
     // TODO: Localization
@@ -215,6 +219,8 @@ function justWatchPrintPanel(response, div){
 
     if(nomatches){
       noMatchesP.innerHTML = 'NO PERFECT MATCHES [but '+ response.total_results +' results]';
+
+      if (debug) noMatchesP.innerHTML += '<p>T:'+titleFull +' Y:'+year + ' Y:'+yearAlt +'</p>';
 
       div.appendChild( justWatchOffersHTML(response.items[0].offers) );
 
