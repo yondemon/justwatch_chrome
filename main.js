@@ -39,17 +39,16 @@ if(ldJSON.length > 0) {
   if(debug) console.log(showdata);
 }
 
-
-
 if(location.hostname.match('imdb')) {
   //console.log('imdb');
   reviewBar = document.getElementsByClassName('plot_summary_wrapper')[0];
   titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
 
+  year = extractYear(document.querySelectorAll('.titleBar *[itemprop="datePublished"]')[0].content);
+
 } else if(location.hostname.match('rottentomatoes')) {
   //console.log('rottentomatoes');  
   // HAS LDJSON
-  // 
   reviewBar = document.getElementById('watch-it-now');
   titleFull = document.getElementsByTagName('h1')[0].innerText;
 
@@ -112,18 +111,24 @@ if (typeof reviewBar !== 'undefined') {
   var matches;
   matches = titleRegexp.exec(titleFull);
   
-  if(matches !== null) {
+  if( typeof year != 'undefined' ) {
+    title = titleFull;
+    if(matches !== null) {
+      title = matches[1];
+      yearAlt = parseInt(matches[2]);
+    } 
+  } else if(matches !== null) {
     title = matches[1];
     year = parseInt(matches[2]);
   } else if(startDate != null) {
     title = titleFull;
     year = startDate.getFullYear();
-  } else if( typeof year != 'undefined' ) {
-    title = titleFull;
   } else {
     title = titleFull;
     year = null;
   }
+
+  //console.log('T:'+titleFull +' Y:'+year);
 
   if (title !== null) {
     var xhr = new XMLHttpRequest();
@@ -187,13 +192,15 @@ function justWatchPrintPanel(response, div){
       div.appendChild( justWatchOffersHTML(item.offers) );
 
     }  else {
-      var done = false;
 
-      for(item of response.items){
-        
-        if(!done 
-          && year != null 
-          && (item.original_release_year == year) ){
+      var done = false;
+      var totalItems = response.items.length;
+      for(var i = 0 ; i < totalItems && !done ; i++) {
+        item = response.items[i];
+        if( 
+          (year != null  && (item.original_release_year == year) )
+          || (yearAlt != null && item.original_release_year == yearAlt)
+          ){
 
           justWatchSetPanelTitleURL(item);
     
@@ -203,7 +210,6 @@ function justWatchPrintPanel(response, div){
           div.appendChild( justWatchOffersHTML(item.offers) );
           done = true;
         }
-
       }
     }
 
