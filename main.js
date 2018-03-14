@@ -315,25 +315,29 @@ function justWatchOffersHTML(offers){
         logo = domainString;
       }
 
-      if (offer.monetization_type == 'flatrate') {
-        offersFlat += '<li><a href="' + offer.urls.standard_web 
-          + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
-          + offer.presentation_type + '</span></a></li>\n';
-      } else if (offer.monetization_type == 'rent') {
-        offersRent += '<li><a href="' + offer.urls.standard_web 
-          + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
-          + offer.presentation_type + '</span>  <span class="price">' 
-          + offer.retail_price + ' ' + price[offer.currency] + '</span></a></li>\n';
-      } else if (offer.monetization_type == 'buy') {
-        offersBuy += '<li><a href="' + offer.urls.standard_web  
-          + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
-          + offer.presentation_type + '</span>  <span class="price">' 
-          + offer.retail_price + ' ' + price[offer.currency] + '</span></a></li>\n';
-      } else {
-        offersOther += '<li><a href="' + offer.urls.standard_web 
-          + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
-          + offer.monetization_type + ' ' + offer.presentation_type+'</span>  <span class="price">' 
-          + offer.retail_price+''+price[offer.currency]+'</span></a></li>\n';
+      switch(offer.monetization_type){
+        case 'flatrate':
+          offersFlat += '<li><a href="' + offer.urls.standard_web 
+            + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
+            + offer.presentation_type + '</span></a></li>\n';
+            break;
+        case 'rent':
+          offersRent += '<li><a href="' + offer.urls.standard_web 
+            + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
+            + offer.presentation_type + '</span>  <span class="price">' 
+            + offer.retail_price + ' ' + price[offer.currency] + '</span></a></li>\n';
+            break;
+        case 'buy':
+          offersBuy += '<li><a href="' + offer.urls.standard_web  
+            + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
+            + offer.presentation_type + '</span>  <span class="price">' 
+            + offer.retail_price + ' ' + price[offer.currency] + '</span></a></li>\n';
+            break;
+        default:
+          offersOther += '<li><a href="' + offer.urls.standard_web 
+            + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
+            + offer.monetization_type + ' ' + offer.presentation_type+'</span>  <span class="price">' 
+            + offer.retail_price+''+price[offer.currency]+'</span></a></li>\n';
       }
     }
     offersData = 
