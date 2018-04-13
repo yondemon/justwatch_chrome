@@ -274,7 +274,7 @@ function justWatchPrintPanel(response, div){
 }
 
 function justWatchPanelTitleHTML(){
-    return '<span id="justwatch-title" class="title">JustWatch: <span id="justwatch-title-full">'+titleFull+'</span></span>';
+    return '<span id="justwatch-title" class="title">JustWatch: ['+ l18n +']<span id="justwatch-title-full">'+titleFull+'</span></span>';
 }
 function justWatchSetPanelTitleURL(item){
     var originalSpan = document.getElementById('justwatch-title');
@@ -305,7 +305,14 @@ function justWatchOffersHTML(offers){
   if (typeof offers !== 'undefined' && offers.length > 0){
     for(offer of offers) {
       if(debug) console.log(offer);
-      var domainString = offer.urls.standard_web.replace('http://','').replace('https://','').replace('www.','').split(/[/?#]/)[0];
+
+      var domainString = '';
+      var url = '#';
+      if(offer.urls.length > 0 && typeof offer.urls.standard_web !== 'undefined'){
+        domainString = offer.urls.standard_web.replace('http://','').replace('https://','').replace('www.','').split(/[/?#]/)[0];
+        url = offer.urls.standard_web;
+      }
+
       var logo = '';
       var logoURL = providerLogoURL(offer.provider_id);
 
@@ -316,24 +323,24 @@ function justWatchOffersHTML(offers){
       }
 
       if (offer.monetization_type == 'flatrate') {
-        offersFlat += '<li><a href="' + offer.urls.standard_web 
+        offersFlat += '<li><a href="' + url 
           + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
           + offer.presentation_type + '</span></a></li>\n';
       } else if (offer.monetization_type == 'rent') {
-        offersRent += '<li><a href="' + offer.urls.standard_web 
+        offersRent += '<li><a href="' + url
           + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
           + offer.presentation_type + '</span>  <span class="price">' 
           + offer.retail_price + ' ' + price[offer.currency] + '</span></a></li>\n';
       } else if (offer.monetization_type == 'buy') {
-        offersBuy += '<li><a href="' + offer.urls.standard_web  
+        offersBuy += '<li><a href="' + url
           + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
           + offer.presentation_type + '</span>  <span class="price">' 
           + offer.retail_price + ' ' + price[offer.currency] + '</span></a></li>\n';
       } else {
-        offersOther += '<li><a href="' + offer.urls.standard_web 
+        offersOther += '<li><a href="' + url
           + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
           + offer.monetization_type + ' ' + offer.presentation_type+'</span>  <span class="price">' 
-          + offer.retail_price+''+price[offer.currency]+'</span></a></li>\n';
+          + ((typeof offer.retail_price !== 'undefined')? offer.retail_price :'0')+''+ ( (typeof offer.currency !== 'undefined')?price[offer.currency]:'-' ) +'</span></a></li>\n';
       }
     }
     offersData = 
