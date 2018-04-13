@@ -300,6 +300,7 @@ function justWatchOffersHTML(offers){
     offersFlat = "",
     offersRent = "",
     offersBuy = "",
+    offersFree = "",
     offersOther = "";
   
   if (typeof offers !== 'undefined' && offers.length > 0){
@@ -345,6 +346,11 @@ function justWatchOffersHTML(offers){
             + offer.presentation_type + '</span>  <span class="price">' 
             + offer.retail_price + ' ' + price[offer.currency] + '</span></a></li>\n';
             break;
+        case 'free':
+          offersFree += '<li><a href="' + url
+            + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
+            + offer.presentation_type + '</span></a></li>\n';
+            break;
         default:
           offersOther += '<li><a href="' + url
             + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
@@ -357,6 +363,7 @@ function justWatchOffersHTML(offers){
       ((offersFlat.length > 0)?'<ul data-title="Flat">' + offersFlat + '</ul>':'') +
       ((offersRent.length > 0)?'<ul data-title="Rent">' + offersRent + '</ul>':'') +
       ((offersBuy.length > 0)?'<ul data-title="Buy">' + offersBuy + '</ul>':'') +
+      ((offersFree.length > 0)?'<ul data-title="Free">' + offersFree + '</ul>':'') +
       ((offersOther.length > 0)?'<ul data-title="-">' + offersOther + '</ul>':'');
 } else {
   offersData = '<p class="message">NO OFFERS</p>';
