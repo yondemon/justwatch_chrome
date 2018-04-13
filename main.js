@@ -274,7 +274,7 @@ function justWatchPrintPanel(response, div){
 }
 
 function justWatchPanelTitleHTML(){
-    return '<span id="justwatch-title" class="title">JustWatch: ['+ l18n +']<span id="justwatch-title-full">'+titleFull+'</span></span>';
+    return '<span id="justwatch-title" class="title">JustWatch: ['+ l18n +'] <span id="justwatch-title-full">'+titleFull+'</span></span>';
 }
 function justWatchSetPanelTitleURL(item){
     var originalSpan = document.getElementById('justwatch-title');
@@ -308,7 +308,12 @@ function justWatchOffersHTML(offers){
 
       var domainString = '';
       var url = '#';
-      if(offer.urls.length > 0 && typeof offer.urls.standard_web !== 'undefined'){
+      console.log(offers,
+        offer.urls.length,
+        offer.urls.standard_web,
+        typeof offer.urls.standard_web
+        );
+      if(typeof offer.urls !== 'undefined' /*offer.urls.length > 0*/ && typeof offer.urls.standard_web !== 'undefined'){
         domainString = offer.urls.standard_web.replace('http://','').replace('https://','').replace('www.','').split(/[/?#]/)[0];
         url = offer.urls.standard_web;
       }
