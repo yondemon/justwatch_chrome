@@ -1,4 +1,4 @@
-console.log("JustWatch");
+console.log("JustWatch!");
 const browser = window.browser || window.chrome;
 
 var reviewBar;
@@ -45,6 +45,8 @@ function execute() {
   ldJSON = document.querySelectorAll('script[type="application/ld+json"]');
   if(ldJSON.length > 0) {
     ldJSON = ldJSON[0].innerText;
+    if (debug) console.log(ldJSON);
+
     ldJSON = ldJSON.replace(/(\r\n|\n|\r)/gm,"");
     var showdata = JSON.parse(ldJSON.trim());
     startDate = new Date(showdata.startDate);
@@ -64,7 +66,8 @@ function execute() {
   if(location.hostname.match('imdb')) {
     //console.log('imdb');
     reviewBar = document.getElementsByClassName('plot_summary_wrapper')[0];
-    titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
+    //titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
+    titleFull = document.querySelectorAll('meta[name="title"]')[0].getAttribute('content');
 
     tmpYear = document.querySelectorAll('.titleBar *[itemprop="datePublished"]');
     if( tmpYear.length > 0 ){
@@ -137,7 +140,6 @@ function execute() {
   }
 
   if (typeof reviewBar !== 'undefined') {
-
     var div = document.createElement("div");
     div.classList.add('justwatch');
 
@@ -162,7 +164,7 @@ function execute() {
       year = null;
     }
 
-    if (debug) console.log('T:'+titleFull +' Y:'+year + ' Y:'+yearAlt);
+    if (debug) console.log( 'T: "' + titleFull + '"" t: "' +  title + '" Y:' + year + ' Y:' + yearAlt );
     
     if (title !== null) {
       var xhr = new XMLHttpRequest();
@@ -171,7 +173,7 @@ function execute() {
       //var localization = l18nSetup('es_ES');
       //var localization = l18nSetup('en_US');
       var url = 'https://api.justwatch.com/titles/'+localization+'/popular';
-      if (debug) console.log(url);
+      //if (debug) console.log(url);
 
       xhr.open("POST", url, true);
       xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
@@ -304,7 +306,7 @@ function justWatchOffersHTML(offers){
   
   if (typeof offers !== 'undefined' && offers.length > 0){
     for(offer of offers) {
-      if(debug) console.log(offer);
+      //if(debug) console.log(offer);
       var domainString = offer.urls.standard_web.replace('http://','').replace('https://','').replace('www.','').split(/[/?#]/)[0];
       var logo = '';
       var logoURL = providerLogoURL(offer.provider_id);
@@ -338,7 +340,7 @@ function justWatchOffersHTML(offers){
             + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
             + offer.monetization_type + ' ' + offer.presentation_type+'</span>  <span class="price">' 
             + offer.retail_price+''+price[offer.currency]+'</span></a></li>\n';
-      }
+        }
     }
     offersData = 
       ((offersFlat.length > 0)?'<ul data-title="Flat">' + offersFlat + '</ul>':'') +
@@ -380,6 +382,9 @@ var providers = {
   63: 'filmin',
   64: 'filmin-plus',
   68: 'microsoft-store',
+  84: 'u-next', // JP
+  85: 'dtv', // JP
+  86: 'gyao', // JP
   100: 'guidedoc',
   105: 'fandangonow',
   118: 'hbo', //hboespana
@@ -394,5 +399,6 @@ var providers = {
 var price = {
   'EUR': '€',
   'USD': '$',
-  'CAD': '$'
+  'CAD': '$',
+  'JPY': '¥'
 }
