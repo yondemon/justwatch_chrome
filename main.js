@@ -22,14 +22,11 @@ var l18n = 'es_ES';
 //document.body.onload = execute();
 document.body.onload = function(){
 
-  console.log('loading l18n');
-
   browser.storage.sync.get('justwatch-l18n', 
     function(value){
       if (typeof value['justwatch-l18n'] != 'undefined'){
         l18n = value['justwatch-l18n'];
       }
-      console.log("OK l18n set to "+l18n);
       execute();
     });
 };
@@ -309,11 +306,7 @@ function justWatchOffersHTML(offers){
 
       var domainString = '';
       var url = '#';
-      console.log(offers,
-        offer.urls.length,
-        offer.urls.standard_web,
-        typeof offer.urls.standard_web
-        );
+
       if(typeof offer.urls !== 'undefined' /*offer.urls.length > 0*/ && typeof offer.urls.standard_web !== 'undefined'){
         domainString = offer.urls.standard_web.replace('http://','').replace('https://','').replace('www.','').split(/[/?#]/)[0];
         url = offer.urls.standard_web;

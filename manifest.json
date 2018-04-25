@@ -23,7 +23,7 @@
   "content_scripts": [
     {
       "matches": [
-        "http://*.imdb.com/title/*",
+        "https://*.imdb.com/title/*",
         "https://www.rottentomatoes.com/m/*",
         "http://www.tv.com/movies/*", "http://www.tv.com/shows/*",
         "http://www.sensacine.com/peliculas/*", "http://www.sensacine.com/series/*",
