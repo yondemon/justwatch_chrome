@@ -49,5 +49,6 @@ var countries = {
     'en_US' : 'USA',
     'en_CA' : 'Canada',
     'es_ES' : 'España',
-    'de_DE' : 'Deutschland'
+    'de_DE' : 'Deutschland',
+    'ja_JP' : 'Japan'
 }
