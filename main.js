@@ -295,20 +295,62 @@ function justWatchRemoveNoMatches(){
   noMatchesP.parentNode.removeChild(noMatchesP);
 }
 
+function justWatchSetPresentationTypesMenu(presentationTypes){
+  console.log(presentationTypes);
+
+  titlepanel = document.getElementById('justwatch-title');
+  //presentationTypes.each();
+}
+
 function justWatchOffersHTML(offers){
   var offersDiv = document.createElement("div");
   offersDiv.classList.add('justwatch-offers');
 
-  var offersData = "",
-    offersFlat = "",
-    offersRent = "",
-    offersBuy = "",
-    offersFree = "",
-    offersOther = "";
-  
+  var offersData = {
+      'flatrate': '',
+      'rent': '',
+      'buy': '',
+      'free': '',
+      'other': '',
+    },
+    presentationTypes = {
+      //'cheapest': false,
+      'sd': false,
+      'hd': false,
+      '4k': false,
+    };
+
+  var ulBlocks = {};
+
+  ulBlocks['flatrate'] = document.createElement("ul");
+  ulBlocks['flatrate'].setAttribute('data-monetization_type',"flatrate");
+  ulBlocks['flatrate'].setAttribute('data-title',"Flat");
+  offersDiv.appendChild( ulBlocks['flatrate'] );
+
+  ulBlocks['rent'] = document.createElement("ul");
+  ulBlocks['rent'].setAttribute('data-monetization_type',"rent");
+  ulBlocks['rent'].setAttribute('data-title',"Rent");
+  offersDiv.appendChild( ulBlocks['rent'] );
+
+  ulBlocks['buy'] = document.createElement("ul");
+  ulBlocks['buy'].setAttribute('data-monetization_type',"buy");
+  ulBlocks['buy'].setAttribute('data-title',"Buy");
+  offersDiv.appendChild( ulBlocks['buy'] );
+
+  ulBlocks['free'] = document.createElement("ul");
+  ulBlocks['free'].setAttribute('data-monetization_type',"free");
+  ulBlocks['free'].setAttribute('data-title',"Free");
+  offersDiv.appendChild( ulBlocks['free'] );
+
+  ulBlocks['other'] = document.createElement("ul");
+  ulBlocks['other'].setAttribute('data-monetization_type',"other");
+  ulBlocks['other'].setAttribute('data-title',"-");
+  offersDiv.appendChild( ulBlocks['other'] );
+    
   if (typeof offers !== 'undefined' && offers.length > 0){
-    for(offer of offers) {
-      if(debug) console.log(offer);
+    //for(offer of offers) {
+    for (const [index, offer] of offers.entries()) {      
+      //if(debug) console.log(offer);
 
       var domainString = '';
       var url = '#';
@@ -327,47 +369,107 @@ function justWatchOffersHTML(offers){
         logo = domainString;
       }
 
+      presentationTypes[offer.presentation_type] = true;
+      var cheapest = false;
+
       switch(offer.monetization_type){
         case 'flatrate':
-          offersFlat += '<li><a href="' + url
-            + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
-            + offer.presentation_type + '</span></a></li>\n';
+          if(typeof offersData[offer.monetization_type][offer.provider_id] == 'undefined'){
+            offersData[offer.monetization_type][offer.provider_id] = true;
+            cheapest = true;
+            var old = offersDiv.querySelectorAll('.monetization-'+offer.monetization_type+'.provider-'+offer.provider_id+'.cheapest');
+            console.log(
+              '+ offer-'+index+' +',
+              '.monetization-'+offer.monetization_type+'.provider-'+offer.provider_id+'.cheapest',
+              old);
+            if(old.length > 0){
+              console.log(old);
+              old[0].classList.remove("cheapest");
+            }
+          }
+          ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
+            '<li id="offer-'+index+'" '
+              + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
+              +    ' provider-'+offer.provider_id+' '+(cheapest?'cheapest':'')+'"><a href="' + url
+              + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
+              + offer.presentation_type + '</span></a></li>\n');
             break;
         case 'rent':
-          offersRent += '<li><a href="' + url
-            + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
-            + offer.presentation_type + '</span>  <span class="price">' 
-            + offer.retail_price + ' ' + price[offer.currency] + '</span></a></li>\n';
+          if(typeof offersData[offer.monetization_type][offer.provider_id] == 'undefined' 
+            || offer.retail_price < offersData[offer.monetization_type][offer.provider_id]['cheapest_price'] ){
+          
+            offersData[offer.monetization_type][offer.provider_id] = {};
+            //offersData[offer.monetization_type][offer.provider_id]['cheapest_price'] = offer.retail_price;
+            cheapest = true;
+
+            var old = offersDiv.querySelectorAll('.monetization-'+offer.monetization_type+'.provider-'+offer.provider_id+'.cheapest');
+            console.log(
+              '+ offer-'+index+' +',
+              '.monetization-'+offer.monetization_type+'.provider-'+offer.provider_id+'.cheapest',
+              old);
+            if(old.length > 0){
+              console.log(old);
+              old[0].classList.remove("cheapest");
+            }
+          }
+          ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
+            '<li id="offer-'+index+'" '
+              + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
+              +    ' provider-'+offer.provider_id+' '+(cheapest?'cheapest':'')+'"><a href="' + url
+              + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
+              + offer.presentation_type + '</span>  <span class="price">' 
+              + offer.retail_price + ' ' + price[offer.currency] + '</span></a></li>\n');
             break;
         case 'buy':
-          offersBuy += '<li><a href="' + url
-            + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
-            + offer.presentation_type + '</span>  <span class="price">' 
-            + offer.retail_price + ' ' + price[offer.currency] + '</span></a></li>\n';
+          if(typeof offersData[offer.monetization_type][offer.provider_id] == 'undefined' 
+            || offer.retail_price < offersData[offer.monetization_type][offer.provider_id]['cheapest_price'] ){
+          
+            offersData[offer.monetization_type][offer.provider_id] = {};
+            //offersData[offer.monetization_type][offer.provider_id]['cheapest_price'] = offer.retail_price;
+            cheapest = true;
+
+            var old = offersDiv.querySelectorAll('.monetization-'+offer.monetization_type+'.provider-'+offer.provider_id+'.cheapest');
+            console.log(
+              '+ offer-'+index+' +',
+              '.monetization-'+offer.monetization_type+'.provider-'+offer.provider_id+'.cheapest',
+              old);
+            if(old.length > 0){
+              console.log(old);
+              old[0].classList.remove("cheapest");
+            }
+          }
+          ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
+            '<li id="offer-'+index+'" '
+              + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
+              +    ' provider-'+offer.provider_id+' '+(cheapest?'cheapest':'')+'"><a href="' + url
+              + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
+              + offer.presentation_type + '</span>  <span class="price">' 
+              + offer.retail_price + ' ' + price[offer.currency] + '</span></a></li>\n');
             break;
         case 'free':
-          offersFree += '<li><a href="' + url
-            + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
-            + offer.presentation_type + '</span></a></li>\n';
+          ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
+            '<li id="offer-'+index+'" '
+              + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' provider-"><a href="' + url
+              + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
+              + offer.presentation_type + '</span></a></li>\n');
             break;
         default:
-          offersOther += '<li><a href="' + url
-            + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
-            + offer.monetization_type + ' ' + offer.presentation_type+'</span>  <span class="price">' 
-          + ((typeof offer.retail_price !== 'undefined')? offer.retail_price :'0')+''+ ( (typeof offer.currency !== 'undefined')?price[offer.currency]:'-' ) +'</span></a></li>\n';
-
+          ulBlocks['other'].insertAdjacentHTML('beforeend',
+            '<li id="offer-'+index+'" '
+              + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' provider-"><a href="' + url
+              + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
+              + offer.monetization_type + ' ' + offer.presentation_type+'</span>  <span class="price">' 
+              + ((typeof offer.retail_price !== 'undefined')? offer.retail_price :'0')+''+ ( (typeof offer.currency !== 'undefined')?price[offer.currency]:'-' ) +'</span></a></li>\n');
       }
+
     }
-    offersData = 
-      ((offersFlat.length > 0)?'<ul data-title="Flat">' + offersFlat + '</ul>':'') +
-      ((offersRent.length > 0)?'<ul data-title="Rent">' + offersRent + '</ul>':'') +
-      ((offersBuy.length > 0)?'<ul data-title="Buy">' + offersBuy + '</ul>':'') +
-      ((offersFree.length > 0)?'<ul data-title="Free">' + offersFree + '</ul>':'') +
-      ((offersOther.length > 0)?'<ul data-title="-">' + offersOther + '</ul>':'');
-} else {
-  offersData = '<p class="message">NO OFFERS</p>';
-}
-  offersDiv.innerHTML = offersData.trim();
+    // TODO: Clean empty ULBLocks
+
+    justWatchSetPresentationTypesMenu(presentationTypes);
+
+  } else {
+    offersDiv.innerHTML = '<p class="message">NO OFFERS</p>';
+  }
 
   return offersDiv;
 }
