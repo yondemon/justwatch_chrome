@@ -77,6 +77,10 @@ function execute() {
     reviewBar = document.getElementById('watch-it-now');
     titleFull = document.getElementsByTagName('h1')[0].innerText;
 
+    if(year == null){
+      year = document.querySelectorAll('span.year')[0].innerText;
+    }
+
   } else if(location.hostname.match('tv.com')) {
     //console.log('tv.com');
     // HAS LDJSON
@@ -386,7 +390,8 @@ var providers = {
   11: 'mubi',
   15: 'hulu',
   18: 'playstation',
-  //27: 'hbo', // USA
+  27: 'hbo-now', // USA
+  31: 'hbo-go', // USA
   34: 'epix',
   35: 'rakuten-tv', //wuaki
   //37: 'showtime', // USA
@@ -395,6 +400,7 @@ var providers = {
   63: 'filmin',
   64: 'filmin-plus',
   68: 'microsoft-store',
+  //81: 'CINEMA',
   84: 'u-next', // JP
   85: 'dtv', // JP
   86: 'gyao', // JP
