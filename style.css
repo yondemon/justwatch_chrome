@@ -19,6 +19,7 @@
   list-style: none;
   background-color: #EFEFEF;
   padding-left: 0px;
+  clear: both;
 }
 
 .justwatch .justwatch-offers ul::before {
@@ -38,6 +39,10 @@
   min-height: 5rem;
   width: 3.4rem;
   display: inline-block;
+}
+
+.justwatch .justwatch-offers ul li:not(.cheapest){
+  display: none;
 }
 
 .justwatch .justwatch-offers ul li .provider{

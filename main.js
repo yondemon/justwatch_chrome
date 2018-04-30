@@ -302,16 +302,35 @@ function justWatchSetPresentationTypesMenu(presentationTypes){
   //presentationTypes.each();
 }
 
+function justWatchSetCheapest(offer,offersDiv,offersData){
+
+  if (typeof offersData[offer.monetization_type][offer.provider_id] == 'undefined') {
+    offersData[offer.monetization_type][offer.provider_id] = {};
+  };
+  
+  if(typeof offer.retail_price != 'undefined') {
+    offersData[offer.monetization_type][offer.provider_id]['cheapest_price'] = offer.retail_price;
+  } else {
+    offersData[offer.monetization_type][offer.provider_id] = true;
+  }
+  
+  var old = offersDiv.querySelectorAll('.monetization-'+offer.monetization_type+'.provider-'+offer.provider_id+'.cheapest');
+  if(old.length > 0){
+    old[0].classList.remove("cheapest");
+  }
+
+}
+
 function justWatchOffersHTML(offers){
   var offersDiv = document.createElement("div");
   offersDiv.classList.add('justwatch-offers');
 
   var offersData = {
-      'flatrate': '',
-      'rent': '',
-      'buy': '',
-      'free': '',
-      'other': '',
+      'flatrate': {},
+      'rent': {},
+      'buy': {},
+      'free': {},
+      'other': {},
     },
     presentationTypes = {
       //'cheapest': false,
@@ -374,19 +393,12 @@ function justWatchOffersHTML(offers){
 
       switch(offer.monetization_type){
         case 'flatrate':
+          
           if(typeof offersData[offer.monetization_type][offer.provider_id] == 'undefined'){
-            offersData[offer.monetization_type][offer.provider_id] = true;
+            justWatchSetCheapest(offer,offersDiv,offersData);
             cheapest = true;
-            var old = offersDiv.querySelectorAll('.monetization-'+offer.monetization_type+'.provider-'+offer.provider_id+'.cheapest');
-            console.log(
-              '+ offer-'+index+' +',
-              '.monetization-'+offer.monetization_type+'.provider-'+offer.provider_id+'.cheapest',
-              old);
-            if(old.length > 0){
-              console.log(old);
-              old[0].classList.remove("cheapest");
-            }
           }
+
           ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
             '<li id="offer-'+index+'" '
               + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
@@ -394,24 +406,15 @@ function justWatchOffersHTML(offers){
               + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
               + offer.presentation_type + '</span></a></li>\n');
             break;
+
         case 'rent':
+
           if(typeof offersData[offer.monetization_type][offer.provider_id] == 'undefined' 
             || offer.retail_price < offersData[offer.monetization_type][offer.provider_id]['cheapest_price'] ){
-          
-            offersData[offer.monetization_type][offer.provider_id] = {};
-            //offersData[offer.monetization_type][offer.provider_id]['cheapest_price'] = offer.retail_price;
+            justWatchSetCheapest(offer,offersDiv,offersData);
             cheapest = true;
-
-            var old = offersDiv.querySelectorAll('.monetization-'+offer.monetization_type+'.provider-'+offer.provider_id+'.cheapest');
-            console.log(
-              '+ offer-'+index+' +',
-              '.monetization-'+offer.monetization_type+'.provider-'+offer.provider_id+'.cheapest',
-              old);
-            if(old.length > 0){
-              console.log(old);
-              old[0].classList.remove("cheapest");
-            }
           }
+
           ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
             '<li id="offer-'+index+'" '
               + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
@@ -420,24 +423,15 @@ function justWatchOffersHTML(offers){
               + offer.presentation_type + '</span>  <span class="price">' 
               + offer.retail_price + ' ' + price[offer.currency] + '</span></a></li>\n');
             break;
+
         case 'buy':
+
           if(typeof offersData[offer.monetization_type][offer.provider_id] == 'undefined' 
             || offer.retail_price < offersData[offer.monetization_type][offer.provider_id]['cheapest_price'] ){
-          
-            offersData[offer.monetization_type][offer.provider_id] = {};
-            //offersData[offer.monetization_type][offer.provider_id]['cheapest_price'] = offer.retail_price;
+            justWatchSetCheapest(offer,offersDiv,offersData);
             cheapest = true;
-
-            var old = offersDiv.querySelectorAll('.monetization-'+offer.monetization_type+'.provider-'+offer.provider_id+'.cheapest');
-            console.log(
-              '+ offer-'+index+' +',
-              '.monetization-'+offer.monetization_type+'.provider-'+offer.provider_id+'.cheapest',
-              old);
-            if(old.length > 0){
-              console.log(old);
-              old[0].classList.remove("cheapest");
-            }
           }
+
           ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
             '<li id="offer-'+index+'" '
               + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
@@ -446,25 +440,40 @@ function justWatchOffersHTML(offers){
               + offer.presentation_type + '</span>  <span class="price">' 
               + offer.retail_price + ' ' + price[offer.currency] + '</span></a></li>\n');
             break;
+
         case 'free':
+
           ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
             '<li id="offer-'+index+'" '
-              + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' provider-"><a href="' + url
+              + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
+              +    ' provider-'+offer.provider_id+' cheapest"><a href="' + url
               + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
               + offer.presentation_type + '</span></a></li>\n');
             break;
+
         default:
           ulBlocks['other'].insertAdjacentHTML('beforeend',
             '<li id="offer-'+index+'" '
-              + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' provider-"><a href="' + url
+              + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
+              +    ' provider-'+offer.provider_id+' cheapest"><a href="' + url
               + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
               + offer.monetization_type + ' ' + offer.presentation_type+'</span>  <span class="price">' 
               + ((typeof offer.retail_price !== 'undefined')? offer.retail_price :'0')+''+ ( (typeof offer.currency !== 'undefined')?price[offer.currency]:'-' ) +'</span></a></li>\n');
       }
 
     }
-    // TODO: Clean empty ULBLocks
 
+    for (var block in ulBlocks) {
+      if (ulBlocks.hasOwnProperty(block)) {
+        var offerBlock = ulBlocks[block];
+        if (typeof offerBlock.childNodes == 'undefined' ||
+          offerBlock.childNodes.length === 0) {
+
+          offersDiv.removeChild(ulBlocks[block]);
+        }
+      }
+    }
+ 
     justWatchSetPresentationTypesMenu(presentationTypes);
 
   } else {
