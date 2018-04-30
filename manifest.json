@@ -32,7 +32,8 @@
         "http://cinefilica.es/peliculas/*",
         "https://www.ecartelera.com/peliculas/*",
         "http://www.metacritic.com/movie/*","http://www.metacritic.com/tv/*",
-        "https://www.themoviedb.org/movie/*"
+        "https://www.themoviedb.org/movie/*",
+        "https://letterboxd.com/film/*"
       ],
       "js": ["main.js"],
       "css": [ "style.css" ]

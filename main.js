@@ -141,6 +141,15 @@ function execute() {
     titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  
     year = extractYear(document.getElementsByClassName('release_date')[0].innerText);
 
+  } else if(location.hostname.match('letterboxd.com')) {
+
+    //reviewBar = document.getElementsByClassName('col-main')[0];
+    reviewBar = document.getElementById('featured-film-header');
+    titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  
+    //year = extractYear(document.getElementsByClassName('release_date')[0].innerText);
+    year = extractYear(document.querySelectorAll('*[itemprop="datePublished"]')[0].innerText);
+    // 
+
   } else {
     console.log('error');
   }
