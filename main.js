@@ -252,7 +252,9 @@ function justWatchPrintPanel(response, div){
   div.appendChild( noMatchesP );
 
   if(response.total_results > 0){
-    
+
+    //justWatchSetTotalResults( response.total_results );
+
     if(response.total_results === 1){
       item = response.items[0];
       justWatchSetPanelTitleURL(item);
@@ -265,22 +267,21 @@ function justWatchPrintPanel(response, div){
 
       var done = false;
       var totalItems = response.items.length;
-      for(var i = 0 ; i < totalItems && !done; i++) {
+      for(var i = 0 ; i < totalItems /*&& !done*/; i++) {
         item = response.items[i];
         if( 
           (year != null  && (item.original_release_year == year) )
           || (yearAlt != null && item.original_release_year == yearAlt)
           ){
 
-          justWatchSetPanelTitleURL(item);
-    
-          nomatches = false;
-          
-          div.appendChild( justWatchOffersHTML(item.offers) );
-
-          //responseMatches.push(item);
-
+          if(!done){
+            justWatchSetPanelTitleURL(item);
+            nomatches = false;
+            div.appendChild( justWatchOffersHTML(item.offers) );
+          }
           done = true;
+
+          responseMatches.push(item);
         }
       }
     }
@@ -296,6 +297,9 @@ function justWatchPrintPanel(response, div){
 
     } else {     
       justWatchRemoveNoMatches();
+
+      if(debug) justWatchSetTotalResults( responseMatches.length +'/'+response.total_results );
+
       //console.log(responseMatches);
       //justWatchListResults(responseMatches);
     }
@@ -303,8 +307,14 @@ function justWatchPrintPanel(response, div){
 }
 
 function justWatchPanelTitleHTML(){
-    return '<span id="justwatch-title" class="title">JustWatch: ['+ l18n +'] <span id="justwatch-title-full">'+titleFull+'</span></span>';
+    return '<span id="justwatch-title" class="title">JustWatch:'+ ( (debug)?'['+l18n +']':'') +' <span id="justwatch-title-full">'+titleFull+'</span></span>';
 }
+
+function justWatchSetTotalResults(number){
+  var titleBlock = document.getElementById('justwatch-title');
+  titleBlock.insertAdjacentHTML('beforeend','<span id="justwatch-totalresults">['+number+']</span>');
+}
+
 function justWatchSetPanelTitleURL(item){
     var originalSpan = document.getElementById('justwatch-title');
     var replacementA = document.createElement("a");
@@ -351,49 +361,38 @@ function justWatchOffersHTML(offers){
   var offersDiv = document.createElement("div");
   offersDiv.classList.add('justwatch-offers');
 
-  var offersData = {
-      'flatrate': {},
-      'rent': {},
-      'buy': {},
-      'free': {},
-      'other': {},
+  var lists = {
+    'flatrate': 'Flat',
+    'rent': 'Rent',
+    'buy': 'Buy',
+    'free': 'Free',
+    'cinema': 'Cinema',
+    'other': '-',
     },
     presentationTypes = {
       //'cheapest': false,
       'sd': false,
       'hd': false,
       '4k': false,
-    };
+    },
+    offersData = {}
+    ;
 
   var ulBlocks = {};
 
-  ulBlocks['flatrate'] = document.createElement("ul");
-  ulBlocks['flatrate'].setAttribute('data-monetization_type',"flatrate");
-  ulBlocks['flatrate'].setAttribute('data-title',"Flat");
-  offersDiv.appendChild( ulBlocks['flatrate'] );
+  for (var dataList in lists) {
+    if (lists.hasOwnProperty(dataList)) {
+      offersData[dataList] = {};
 
-  ulBlocks['rent'] = document.createElement("ul");
-  ulBlocks['rent'].setAttribute('data-monetization_type',"rent");
-  ulBlocks['rent'].setAttribute('data-title',"Rent");
-  offersDiv.appendChild( ulBlocks['rent'] );
-
-  ulBlocks['buy'] = document.createElement("ul");
-  ulBlocks['buy'].setAttribute('data-monetization_type',"buy");
-  ulBlocks['buy'].setAttribute('data-title',"Buy");
-  offersDiv.appendChild( ulBlocks['buy'] );
-
-  ulBlocks['free'] = document.createElement("ul");
-  ulBlocks['free'].setAttribute('data-monetization_type',"free");
-  ulBlocks['free'].setAttribute('data-title',"Free");
-  offersDiv.appendChild( ulBlocks['free'] );
-
-  ulBlocks['other'] = document.createElement("ul");
-  ulBlocks['other'].setAttribute('data-monetization_type',"other");
-  ulBlocks['other'].setAttribute('data-title',"-");
-  offersDiv.appendChild( ulBlocks['other'] );
+      ulBlocks[dataList] = document.createElement("ul");
+      ulBlocks[dataList].setAttribute('data-monetization_type',dataList);
+      ulBlocks[dataList].setAttribute('data-title',lists[dataList]);
+      offersDiv.appendChild( ulBlocks[dataList] );
+    }
+  }
     
   if (typeof offers !== 'undefined' && offers.length > 0){
-    //for(offer of offers) {
+    
     for (const [index, offer] of offers.entries()) {      
       //if(debug) console.log(offer);
 
@@ -469,6 +468,14 @@ function justWatchOffersHTML(offers){
 
         case 'free':
 
+          ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
+            '<li id="offer-'+index+'" '
+              + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
+              +    ' provider-'+offer.provider_id+' cheapest"><a href="' + url
+              + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
+              + offer.presentation_type + '</span></a></li>\n');
+            break;
+        case 'cinema':
           ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
             '<li id="offer-'+index+'" '
               + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
