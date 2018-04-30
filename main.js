@@ -135,6 +135,11 @@ function execute() {
     } else if ( type == 'show' ) {
       reviewBar = document.getElementsByClassName('product_data_summary')[0];
     }
+  } else if(location.hostname.match('themoviedb.org')) {
+
+    reviewBar = document.getElementsByClassName('header')[0];
+    titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  
+    year = extractYear(document.getElementsByClassName('release_date')[0].innerText);
 
   } else {
     console.log('error');
@@ -216,9 +221,22 @@ function extractYear(string){
   return null;
 }
 
+function justWatchListResults(response){
+  
+  for(let [index,item] of response.items.entries() ){
+    var liElement = document.createElement('li');
+    var resultlink = document.createElement('a');
+    resultlink.innerHTML = item.original_title + "&nbsp;("+ item.original_release_year+")";
+    resultlink.setAttribute('href','http://www.justwatch.com' + item.full_path);
+    liElement.appendChild( resultlink );
+    noMatchesP.appendChild( liElement );
+  }
+}
+
 function justWatchPrintPanel(response, div){  
   var offersDiv,
-    nomatches = true;
+    nomatches = true,
+    responseMatches = [];
 
   div.appendChild( document.createRange().createContextualFragment( justWatchPanelTitleHTML() ) );
 
@@ -231,7 +249,6 @@ function justWatchPrintPanel(response, div){
       justWatchSetPanelTitleURL(item);
       
       nomatches = false;
-      justWatchRemoveNoMatches();
 
       div.appendChild( justWatchOffersHTML(item.offers) );
 
@@ -239,7 +256,7 @@ function justWatchPrintPanel(response, div){
 
       var done = false;
       var totalItems = response.items.length;
-      for(var i = 0 ; i < totalItems && !done ; i++) {
+      for(var i = 0 ; i < totalItems && !done; i++) {
         item = response.items[i];
         if( 
           (year != null  && (item.original_release_year == year) )
@@ -249,9 +266,11 @@ function justWatchPrintPanel(response, div){
           justWatchSetPanelTitleURL(item);
     
           nomatches = false;
-          justWatchRemoveNoMatches();
-
+          
           div.appendChild( justWatchOffersHTML(item.offers) );
+
+          //responseMatches.push(item);
+
           done = true;
         }
       }
@@ -260,18 +279,16 @@ function justWatchPrintPanel(response, div){
     if(nomatches){
       noMatchesP.innerHTML = 'NO PERFECT MATCHES [but '+ response.total_results +' results]';
 
-      if (debug) noMatchesP.innerHTML += '<p>T:'+titleFull +' Y:'+year + ' Y:'+yearAlt +'</p>';
+      if (debug) noMatchesP.innerHTML += '<p>T:'+titleFull +' Y:'+year + ' Y:'+yearAlt +'</p>';   
+
+      justWatchListResults(response);
 
       div.appendChild( justWatchOffersHTML(response.items[0].offers) );
 
-      for(let [index,item] of response.items.entries() ){
-        var liElement = document.createElement('li');
-        var resultlink = document.createElement('a');
-        resultlink.innerHTML = item.original_title + "&nbsp;("+ item.original_release_year+")";
-        resultlink.setAttribute('href','http://www.justwatch.com' + item.full_path);
-        liElement.appendChild( resultlink );
-        noMatchesP.appendChild( liElement );
-      }
+    } else {     
+      justWatchRemoveNoMatches();
+      //console.log(responseMatches);
+      //justWatchListResults(responseMatches);
     }
   }
 }
