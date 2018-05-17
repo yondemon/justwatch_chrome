@@ -3,6 +3,8 @@ const browser = window.browser || window.chrome;
 
 var debug = true;
 var l18n = 'es_ES';
+const API_DOMAIN = 'api.justwatch.com';
+const DOMAIN = 'justwatch.com';
 
 class JustWatchChrome {
 
@@ -16,6 +18,7 @@ class JustWatchChrome {
     this.year = null; 
     this.yearAlt = null;
     this.type = null;
+    this.release_date = null;
 
 
     this.noMatchesP = document.createElement("p");
@@ -61,7 +64,8 @@ class JustWatchChrome {
 
       var tmpYear = document.querySelectorAll('.titleBar *[itemprop="datePublished"]');
       if( tmpYear.length > 0 ){
-        this.year = this.extractYear(tmpYear[0].content);  
+        this.release_date = tmpYear[0].content;
+        this.year = this.extractYear();  
       }
 
     } else if(location.hostname.match('rottentomatoes')) {
@@ -119,7 +123,7 @@ class JustWatchChrome {
       this.reviewBar = document.getElementById('scorebox');
       this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
       //titleFull = document.querySelectorAll('span[itemprop="name"]')[0].innerText;
-      //year = document.querySelectorAll('#movie-header h4')[0].innerText;
+      this.year = this.extractYear(document.querySelectorAll('head title')[0].innerText);
     } else if(location.hostname.match('metacritic.com')) {
       // HAS LDJSON
       this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
@@ -180,10 +184,9 @@ class JustWatchChrome {
       if (this.title !== null) {
         var xhr = new XMLHttpRequest();
         
-        var localization = l18n; // 'es_ES';
-        //var localization = l18nSetup('es_ES');
-        //var localization = l18nSetup('en_US');
-        var url = 'https://api.justwatch.com/titles/'+localization+'/popular';
+        var localization = l18n;
+        //var url = 'https://api.justwatch.com/titles/'+localization+'/popular';
+        var url = 'https://'+API_DOMAIN+'/titles/'+localization+'/popular';
         //if (debug) console.log(url);
 
         xhr.open("POST", url, true);
@@ -233,7 +236,7 @@ class JustWatchChrome {
       var liElement = document.createElement('li');
       var resultlink = document.createElement('a');
       resultlink.innerHTML = item.original_title + "&nbsp;("+ item.original_release_year+")";
-      resultlink.setAttribute('href','http://www.justwatch.com' + item.full_path);
+      resultlink.setAttribute('href','http://'+ DOMAIN + item.full_path);
       liElement.appendChild( resultlink );
       this.noMatchesP.appendChild( liElement );
     }
@@ -275,6 +278,9 @@ class JustWatchChrome {
               nomatches = false;
               this.setPanelTitleURL(item);
               div.appendChild( this.getOffersHTML(item.offers) );
+
+              this.movieJustWatchData = this.getTitle(this.type, item.id);
+              console.log(this.movieJustWatchData);
             }
             done = true;
 
@@ -297,10 +303,19 @@ class JustWatchChrome {
 
         if(debug) this.setTotalResults( responseMatches.length +'/'+response.total_results );
 
-        //console.log(responseMatches);
+        console.log(responseMatches);
         //this.showListResults(responseMatches);
       }
     }
+  }
+
+  async getTitle(content_type, title_id)
+  {
+    title_id = encodeURIComponent(title_id);
+    content_type = encodeURIComponent(content_type);
+    //var locale = encodeURIComponent(this._options.locale);
+    var locale = l18n;
+    return await this.request('GET', '/titles/'+content_type+'/'+title_id+'/locale/'+locale);
   }
 
   getPanelTitleHTML(){
@@ -316,7 +331,7 @@ class JustWatchChrome {
       var originalSpan = document.getElementById('justwatch-title');
       var replacementA = document.createElement("a");
       replacementA.innerHTML = originalSpan.innerHTML;
-      replacementA.setAttribute('href','http://www.justwatch.com' + item.full_path);
+      replacementA.setAttribute('href','http://'+ DOMAIN + item.full_path);
       replacementA.setAttribute('id','justwatch-title');
       replacementA.classList.add('title');
       originalSpan.parentNode.replaceChild(replacementA,originalSpan);
@@ -520,6 +535,90 @@ class JustWatchChrome {
     return false;
   }
 
+
+
+  request(method, endpoint, params)
+  {
+    return new Promise((resolve, reject) => {
+      params = Object.assign({}, params);
+      // build request data
+      var reqData = {
+        protocol: 'https:',
+        hostname: API_DOMAIN,
+        path: endpoint,
+        method: method,
+        headers: {}
+      };
+      var body = null;
+      // add query string if necessary
+      if(method==='GET')
+      {
+        if(Object.keys(params) > 0)
+        {
+          reqData.path = reqData.path+'?'+QueryString.stringify(params);
+        }
+      }
+      else
+      {
+        body = JSON.stringify(params);
+        reqData.headers['Content-Type'] = 'application/json';
+      }
+
+      // send request
+      const req = https.request(reqData, (res) => {
+        // build response
+        let buffers = [];
+        res.on('data', (chunk) => {
+          buffers.push(chunk);
+        });
+
+        res.on('end', () => {
+          // check if response 
+          var output = null;
+          try
+          {
+            output = Buffer.concat(buffers);
+            output = output.toString();
+            output = JSON.parse(output);
+          }
+          catch(error)
+          {
+            if(res.statusCode !== 200)
+            {
+              reject(new Error("request failed with status "+res.statusCode+": "+res.statusMessage));
+            }
+            else
+            {
+              reject(error);
+            }
+            return;
+          }
+          
+          if(output.error)
+          {
+            reject(new Error(output.error));
+          }
+          else
+          {
+            resolve(output);
+          }
+        });
+      });
+
+      // handle error
+      req.on('error', (error) => {
+        reject(error);
+      });
+
+      // send
+      if(method !== 'GET' && body)
+      {
+        req.write(body);
+      }
+      req.end();
+    });
+  }
+
 }
 
 var providers = {
@@ -565,6 +664,7 @@ var price = {
   'JPY': '¥'
 }
 
+var plugin;
 
 document.body.onload = function(){
 
