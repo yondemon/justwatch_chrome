@@ -149,6 +149,12 @@ class JustWatchChrome {
       //this.year = this.extractYear(document.getElementsByClassName('release_date')[0].innerText);
       this.year = this.extractYear(document.querySelectorAll('*[itemprop="datePublished"]')[0].innerText);
       // 
+    } else if(location.hostname.match('abc.es')) {
+
+      this.type = "movie";
+      this.reviewBar = document.getElementsByClassName('horario-emision')[0];
+      this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  
+      this.year = this.extractYear(this.titleFull);
 
     } else {
       console.log('error');
@@ -503,7 +509,11 @@ class JustWatchChrome {
                 +    ' provider-'+offer.provider_id+' cheapest"><a href="' + url
                 + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
                 + offer.monetization_type + ' ' + offer.presentation_type+'</span>  <span class="price">' 
-                + ((typeof offer.retail_price !== 'undefined')? offer.retail_price :'0')+''+ ( (typeof offer.currency !== 'undefined')?price[offer.currency]:'-' ) +'</span></a></li>\n');
+                + ((typeof offer.retail_price !== 'undefined')? offer.retail_price :'0')+''
+                + ( (typeof offer.currency !== 'undefined')?
+                    ((typeof price[offer.currency] !== 'undefined')? price[offer.currency] : offer.currency ) 
+                    : '-' ) 
+                +'</span></a></li>\n');
         }
 
       }
@@ -630,17 +640,21 @@ var providers = {
   9: 'amazon',
   10: 'amazon-instant-video',
   11: 'mubi',
+  12: 'crackle', // MX
   15: 'hulu',
   18: 'playstation',
+  19: 'netmovies', // BR
   27: 'hbo-now', // USA
   31: 'hbo-go', // USA
   34: 'epix',
   35: 'rakuten-tv', //wuaki
   //37: 'showtime', // USA
+  47: 'looke', // BR
   52: 'cravetv', // CA
   62: 'atres-player',
   63: 'filmin',
   64: 'filmin-plus',
+  67: 'blim', // MX
   68: 'microsoft-store',
   //81: 'CINEMA',
   84: 'u-next', // JP
@@ -653,15 +667,19 @@ var providers = {
   140: 'cineplex', // CA
   146: 'icitoutv', // CA
   149: 'movistar-plus',
+  167: 'claro-video',
   169: 'the-movie-network-go', // CA
   182: 'hollywood-suite', // CA
+  188: 'youtube-red',
 }
 
 var price = {
   'EUR': '€',
   'USD': '$',
   'CAD': '$',
-  'JPY': '¥'
+  'JPY': '¥',
+  'MXN': '$',
+  'BRL': 'R$',
 }
 
 var plugin;

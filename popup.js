@@ -50,5 +50,7 @@ var countries = {
     'en_CA' : 'Canada',
     'es_ES' : 'España',
     'de_DE' : 'Deutschland',
-    'ja_JP' : 'Japan'
+    'ja_JP' : 'Japan',
+    'es_MX' : 'Mexico',
+    'pt_BR' : 'Brazil',
 }

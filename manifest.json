@@ -33,7 +33,8 @@
         "https://www.ecartelera.com/peliculas/*",
         "http://www.metacritic.com/movie/*","http://www.metacritic.com/tv/*",
         "https://www.themoviedb.org/movie/*",
-        "https://letterboxd.com/film/*"
+        "https://letterboxd.com/film/*",
+        "http://www.abc.es/play/pelicula/*"
       ],
       "js": ["main.js"],
       "css": [ "style.css" ]
