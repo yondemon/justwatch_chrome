@@ -34,7 +34,8 @@
         "http://www.metacritic.com/movie/*","http://www.metacritic.com/tv/*",
         "https://www.themoviedb.org/movie/*",
         "https://letterboxd.com/film/*",
-        "http://www.abc.es/play/pelicula/*"
+        "http://www.abc.es/play/pelicula/*",
+        "https://trakt.tv/*"
       ],
       "js": ["main.js"],
       "css": [ "style.css" ]

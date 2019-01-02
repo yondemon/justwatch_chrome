@@ -155,6 +155,16 @@ class JustWatchChrome {
       this.reviewBar = document.getElementsByClassName('horario-emision')[0];
       this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  
       this.year = this.extractYear(this.titleFull);
+    } else if(location.hostname.match('trakt.tv')) {
+      
+      if(location.pathname.match('shows')) {
+        this.type = "show";
+      } else { // "movies"
+        this.type = "movie";    
+      }
+      this.reviewBar = document.getElementById('huckster-desktop-wrapper');
+      this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
+      this.year = this.extractYear(document.querySelectorAll('h1 .year')[0].innerText);
 
     } else {
       console.log('error');
@@ -197,10 +207,10 @@ class JustWatchChrome {
 
         xhr.open("POST", url, true);
         xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
-        xhr.setRequestHeader('User-Agent', 'JustWatch unofficial chrome extension (github.com/yondemon/justwatch_chrome/)');
+        // xhr.setRequestHeader('User-Agent', 'JustWatch unofficial chrome extension (github.com/yondemon/justwatch_chrome/)');
 
         var $this = this;
-        xhr.onreadystatechange = function() {
+        xhr.onreadystatechange = (e) => {
           if (xhr.readyState == 4) {
             var resp = JSON.parse(xhr.responseText);
 
@@ -286,7 +296,8 @@ class JustWatchChrome {
               div.appendChild( this.getOffersHTML(item.offers) );
 
               this.movieJustWatchData = this.getTitle(this.type, item.id);
-              console.log(this.movieJustWatchData);
+              
+              console.log({data:this.movieJustWatchData});
             }
             done = true;
 
@@ -317,11 +328,23 @@ class JustWatchChrome {
 
   async getTitle(content_type, title_id)
   {
+    console.log('getTitle',{content_type, title_id})
     title_id = encodeURIComponent(title_id);
     content_type = encodeURIComponent(content_type);
     //var locale = encodeURIComponent(this._options.locale);
-    var locale = l18n;
-    return await this.request('GET', '/titles/'+content_type+'/'+title_id+'/locale/'+locale);
+
+    const xhr = new XMLHttpRequest();
+    const locale = l18n;
+    // return await this.request('GET', '/titles/'+content_type+'/'+title_id+'/locale/'+locale);
+
+    const url = 'https://'+API_DOMAIN + '/titles/'+content_type+'/'+title_id+'/locale/'+locale;
+    xhr.open("GET",url);
+    xhr.send();
+    xhr.onreadystatechange = (e) => {
+      if(xhr.readyState == 4){
+        return xhr.responseText;
+      }
+    }
   }
 
   getPanelTitleHTML(){
@@ -543,90 +566,6 @@ class JustWatchChrome {
       return chrome.runtime.getURL('providers/'+providers[provider_id]+'.jpeg');
     }
     return false;
-  }
-
-
-
-  request(method, endpoint, params)
-  {
-    return new Promise((resolve, reject) => {
-      params = Object.assign({}, params);
-      // build request data
-      var reqData = {
-        protocol: 'https:',
-        hostname: API_DOMAIN,
-        path: endpoint,
-        method: method,
-        headers: {}
-      };
-      var body = null;
-      // add query string if necessary
-      if(method==='GET')
-      {
-        if(Object.keys(params) > 0)
-        {
-          reqData.path = reqData.path+'?'+QueryString.stringify(params);
-        }
-      }
-      else
-      {
-        body = JSON.stringify(params);
-        reqData.headers['Content-Type'] = 'application/json';
-      }
-
-      // send request
-      const req = https.request(reqData, (res) => {
-        // build response
-        let buffers = [];
-        res.on('data', (chunk) => {
-          buffers.push(chunk);
-        });
-
-        res.on('end', () => {
-          // check if response 
-          var output = null;
-          try
-          {
-            output = Buffer.concat(buffers);
-            output = output.toString();
-            output = JSON.parse(output);
-          }
-          catch(error)
-          {
-            if(res.statusCode !== 200)
-            {
-              reject(new Error("request failed with status "+res.statusCode+": "+res.statusMessage));
-            }
-            else
-            {
-              reject(error);
-            }
-            return;
-          }
-          
-          if(output.error)
-          {
-            reject(new Error(output.error));
-          }
-          else
-          {
-            resolve(output);
-          }
-        });
-      });
-
-      // handle error
-      req.on('error', (error) => {
-        reject(error);
-      });
-
-      // send
-      if(method !== 'GET' && body)
-      {
-        req.write(body);
-      }
-      req.end();
-    });
   }
 
 }
