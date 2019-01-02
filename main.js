@@ -296,7 +296,7 @@ class JustWatchChrome {
               div.appendChild( this.getOffersHTML(item.offers) );
 
               this.movieJustWatchData = this.getTitle(this.type, item.id);
-              
+
               console.log({data:this.movieJustWatchData});
             }
             done = true;
@@ -610,6 +610,7 @@ var providers = {
   169: 'the-movie-network-go', // CA
   182: 'hollywood-suite', // CA
   188: 'youtube-red',
+  192: 'youtube',
 }
 
 var price = {
