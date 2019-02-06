@@ -172,7 +172,12 @@ class JustWatchChrome {
       this.reviewBar = document.getElementById('huckster-desktop-wrapper');
       this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
       this.year = this.extractYear(document.querySelectorAll('h1 .year')[0].innerText);
-
+    } else if(location.hostname.match('tvtime.com')) {
+      this.reviewBar = document.getElementsByClassName('show-nav')[0];
+      this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
+      this.year = this.extractYear(document.querySelectorAll('meta[itemprop="startDate"]')[0].getAttribute('content'));
+      this.type = "show";
+      
     } else {
       console.log('error');
     }
@@ -185,7 +190,7 @@ class JustWatchChrome {
       var titleRegexp = /^([^(]*)(\s\(.*\T\V\))?\s\(([\d]{4})\)/;
       var matches;
       matches = titleRegexp.exec(this.titleFull);
-      console.log(matches);
+      if (debug) console.log(matches);
       
       if( typeof this.year != 'undefined' ) {
         this.title = this.titleFull;
