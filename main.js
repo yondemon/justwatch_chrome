@@ -103,9 +103,15 @@ class JustWatchChrome {
       }
 
     } else if(location.hostname.match('filmaffinity.com')) {
-      //console.log('filmaffinity.com');
+      // console.log('filmaffinity.com');
       this.reviewBar = document.getElementsByClassName('movie-info')[0];
       this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  
+
+      if( /TV\)/.test( this.titleFull ) ) {
+        this.type = "show";
+      } else {
+        this.type = "movie";
+      }
 
     } else if(location.hostname.match('fotogramas.es')) {
       //console.log('fotogramas.es');
