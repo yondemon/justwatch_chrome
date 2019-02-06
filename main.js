@@ -109,6 +109,7 @@ class JustWatchChrome {
 
       if( /TV\)/.test( this.titleFull ) ) {
         this.type = "show";
+
       } else {
         this.type = "movie";
       }
@@ -180,19 +181,21 @@ class JustWatchChrome {
       var div = document.createElement("div");
       div.classList.add('justwatch');
 
-      var titleRegexp = /(.*)\s\(.*?([\d]{4}).*?\)/;
+      // var titleRegexp = /(.*)\s\(.*?([\d]{4}).*?\)/;
+      var titleRegexp = /^([^(]*)(\s\(.*\T\V\))?\s\(([\d]{4})\)/;
       var matches;
       matches = titleRegexp.exec(this.titleFull);
+      console.log(matches);
       
       if( typeof this.year != 'undefined' ) {
         this.title = this.titleFull;
         if(matches !== null) {
           this.title = matches[1];
-          this.yearAlt = parseInt(matches[2]);
+          this.yearAlt = parseInt(matches[3]);
         } 
       } else if(matches !== null) {
         this.title = matches[1];
-        this.year = parseInt(matches[2]);
+        this.year = parseInt(matches[3]);
       } else if(this.startDate != null) {
         this.title = this.titleFull;
         this.year = this.startDate.getFullYear();
