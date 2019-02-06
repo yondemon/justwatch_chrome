@@ -36,7 +36,8 @@
         "https://letterboxd.com/film/*",
         "http://www.abc.es/play/pelicula/*",
         "https://trakt.tv/*",
-        "https://www.tvtime.com/*"
+        "https://www.tvtime.com/*",
+        "https://www.allmovie.com/movie/*"
       ],
       "js": ["main.js"],
       "css": [ "style.css" ]

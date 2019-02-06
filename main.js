@@ -177,6 +177,11 @@ class JustWatchChrome {
       this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
       this.year = this.extractYear(document.querySelectorAll('meta[itemprop="startDate"]')[0].getAttribute('content'));
       this.type = "show";
+    } else if(location.hostname.match('allmovie.com')) {
+      this.reviewBar = document.getElementsByClassName('affiliate-links')[0];
+      this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
+      this.year = this.extractYear(document.getElementsByClassName('release-year')[0].getAttribute('content'));
+      this.type = "movie";
       
     } else {
       console.log('error');
