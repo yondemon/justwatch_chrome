@@ -42,18 +42,22 @@ class JustWatchChrome {
 
       this.ldJSON = this.ldJSON.replace(/(\r\n|\n|\r)/gm,"");
       var showdata = JSON.parse(this.ldJSON.trim());
-      this.startDate = new Date(showdata.startDate);
 
-      if(showdata['@type'] == "TVSeries"){
-        this.type = "show";
-      } else if(showdata['@type'] == "Movie") {
-        this.type = "movie";
+      if(showdata['@type'] == "TVSeries" || showdata['@type'] == "Movie"){
+        this.startDate = new Date(showdata.startDate);
+      
+        if(showdata['@type'] == "TVSeries"){
+          this.type = "show";
+        } else if(showdata['@type'] == "Movie") {
+          this.type = "movie";
+        }
+        this.title = showdata['name'];
+        this.year = this.extractYear( showdata['datePublished'] );
+        if(debug) console.log(showdata);
+      } else {
+        this.ldJSON = null;
       }
 
-      this.title = showdata['name'];
-      this.year = this.extractYear( showdata['datePublished'] );
-
-      if(debug) console.log(showdata);
     }
 
     this.ready = false;
@@ -61,11 +65,11 @@ class JustWatchChrome {
       
       // if(location.hostname.match(hostname)){
       if(location.href.match(hostname)){          
-        console.log(hostname);
+        if(debug) console.log(hostname);
 
         this.reviewBar = supportedWeb[hostname].block();
         this.titleFull = (this.title == null)? supportedWeb[hostname].title() : this.title;
-        
+
         var year = this.extractYear( supportedWeb[hostname].year() );
         if (this.year == null){
           this.year = year;
@@ -83,9 +87,9 @@ class JustWatchChrome {
     }
 
     if (!this.ready) {
-      console.log('error');
+      if(debug) console.log('error');
     } else {
-      console.log(this);
+      if(debug) console.log(this);
     }
     
     if (typeof this.reviewBar !== 'undefined') {
@@ -229,7 +233,7 @@ class JustWatchChrome {
 
               this.movieJustWatchData = this.getTitle(this.type, item.id);
 
-              console.log({data:this.movieJustWatchData});
+              if(debug) console.log({data:this.movieJustWatchData});
             }
             done = true;
 
@@ -252,7 +256,7 @@ class JustWatchChrome {
 
         if(debug) this.setTotalResults( responseMatches.length +'/'+response.total_results );
 
-        console.log(responseMatches);
+        if(debug) console.log(responseMatches);
         //this.showListResults(responseMatches);
       }
     }
@@ -260,7 +264,7 @@ class JustWatchChrome {
 
   async getTitle(content_type, title_id)
   {
-    console.log('getTitle',{content_type, title_id})
+    if(debug) console.log('getTitle',{content_type, title_id})
     title_id = encodeURIComponent(title_id);
     content_type = encodeURIComponent(content_type);
     //var locale = encodeURIComponent(this._options.locale);
@@ -663,10 +667,17 @@ var supportedWeb = {
         //titleFull = document.querySelectorAll('span[itemprop="name"]')[0].innerText;
     year: function(){ return document.querySelectorAll('head title')[0].innerText; },
   },
-  'themoviedb.org': {
+  'themoviedb.org/movie': {
     block: function(){ return document.getElementsByClassName('header')[0]; },
     title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  },
     year: function(){ return document.getElementsByClassName('release_date')[0].innerText; },
+    type: "movie",
+  },
+  'themoviedb.org/tv': {
+    block: function(){ return document.getElementsByClassName('header')[0]; },
+    title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  },
+    year: function(){ return document.getElementsByClassName('release_date')[0].innerText; },    
+    type: "show", 
   },
   'thetvdb.com': {
     block: function(){ return document.getElementById('series_basic_info'); },

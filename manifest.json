@@ -32,7 +32,7 @@
         "https://cinefilica.es/titles/*",
         "https://www.ecartelera.com/peliculas/*", "https://www.ecartelera.com/series/*",
 
-        "https://www.themoviedb.org/movie/*",
+        "https://www.themoviedb.org/movie/*","https://www.themoviedb.org/tv/*",
         "https://www.abc.es/play/pelicula/*",
         
         "https://www.metacritic.com/movie/*","https://www.metacritic.com/tv/*",
