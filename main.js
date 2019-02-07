@@ -697,6 +697,18 @@ var supportedWeb = {
     year:  function(){ return document.getElementsByClassName('detailYearInfo')[0].innerText; },    
     type: "show",
   },
+  'criticker.com/film': {
+    block: function(){ return document.getElementById('fi_moreinfo'); },
+    title: function(){ return document.querySelectorAll('h1 [itemprop="name"]')[0].innerText; },
+    year:  function(){ return document.querySelectorAll('h1 [itemprop="datePublished"]')[0].innerText; },
+    type: "movie",
+  },
+  'criticker.com/tv': {
+    block: function(){ return document.getElementById('fi_moreinfo'); },
+    title: function(){ return document.querySelectorAll('h1 [itemprop="name"]')[0].innerText; },
+    year:  function(){ return document.querySelectorAll('h1 [itemprop="startDate"]')[0].innerText; },
+    type: "show",
+  },
   'abc.es': {
     block: function(){ return document.getElementsByClassName('datos-ficha')[0]; },
     title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content'); },

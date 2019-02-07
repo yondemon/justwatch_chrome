@@ -31,19 +31,17 @@
         // "http://www.fotogramas.es/Peliculas/*",
         "https://cinefilica.es/titles/*",
         "https://www.ecartelera.com/peliculas/*", "https://www.ecartelera.com/series/*",
-
         "https://www.themoviedb.org/movie/*","https://www.themoviedb.org/tv/*",
         "https://www.abc.es/play/pelicula/*",
-        
         "https://www.metacritic.com/movie/*","https://www.metacritic.com/tv/*",
-        
         "https://letterboxd.com/film/*",
         "https://trakt.tv/*",
         "https://www.tvtime.com/*",
         "https://www.allmovie.com/movie/*",
         "https://trailers.apple.com/*",
         "https://www.thetvdb.com/series/*",
-        "https://simkl.com/movies/*", "https://simkl.com/tv/*"
+        "https://simkl.com/movies/*", "https://simkl.com/tv/*",
+        "https://www.criticker.com/film/*", "https://www.criticker.com/tv/*"
       ],
       "js": ["main.js"],
       "css": [ "style.css" ]
