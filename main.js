@@ -78,7 +78,6 @@ class JustWatchChrome {
         }
 
         this.ready = true;
-        console.log('ready',this);
         break;
       }
     }
@@ -89,7 +88,6 @@ class JustWatchChrome {
       console.log(this);
     }
     
-
     if (typeof this.reviewBar !== 'undefined') {
       var div = document.createElement("div");
       div.classList.add('justwatch');
@@ -121,11 +119,13 @@ class JustWatchChrome {
         this.yearAlt = this.year - 1;
       }
 
-      if ( matches[2] ){
+      /*
+      if ( matches && matches[2] !== null ){
         this.type = 'show';
       } else {
         this.type = 'movie';
       }
+      */
       
       if (debug) console.log( 'T: "' + this.titleFull + '"" t: "' +  this.title + '" Y:' + this.year + ' Y:' + this.yearAlt + ' t:' + this.type);
       
@@ -667,6 +667,12 @@ var supportedWeb = {
     block: function(){ return document.getElementsByClassName('header')[0]; },
     title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  },
     year: function(){ return document.getElementsByClassName('release_date')[0].innerText; },
+  },
+  'thetvdb.com': {
+    block: function(){ return document.getElementById('series_basic_info'); },
+    title: function(){ return document.getElementById('series_title').innerText;  },
+    year: function(){ return document.querySelectorAll('#series_basic_info li span')[2].innerText; }, //TODO
+    type: "show",
   },
   'abc.es': {
     block: function(){ return document.getElementsByClassName('datos-ficha')[0]; },

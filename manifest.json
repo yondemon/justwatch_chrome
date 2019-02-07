@@ -41,7 +41,8 @@
         "https://trakt.tv/*",
         "https://www.tvtime.com/*",
         "https://www.allmovie.com/movie/*",
-        "https://trailers.apple.com/*"
+        "https://trailers.apple.com/*",
+        "https://www.thetvdb.com/series/*"
       ],
       "js": ["main.js"],
       "css": [ "style.css" ]
