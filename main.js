@@ -685,6 +685,18 @@ var supportedWeb = {
     year: function(){ return document.querySelectorAll('#series_basic_info li span')[2].innerText; }, //TODO
     type: "show",
   },
+  'simkl.com/movies': {
+    block: function(){ return document.getElementsByClassName('SimklTVAboutBlockTitle')[0]; },
+    title: function(){ return document.querySelectorAll('h1[itemprop="name"]')[0].innerText; },
+    year:  function(){ return document.getElementsByClassName('detailYearInfo')[0].innerText; },    
+    type: "movie",
+  },
+  'simkl.com/tv': {
+    block: function(){ return document.getElementsByClassName('SimklTVAboutBlockTitle')[0]; },
+    title: function(){ return document.querySelectorAll('h1[itemprop="name"]')[0].innerText; },
+    year:  function(){ return document.getElementsByClassName('detailYearInfo')[0].innerText; },    
+    type: "show",
+  },
   'abc.es': {
     block: function(){ return document.getElementsByClassName('datos-ficha')[0]; },
     title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content'); },

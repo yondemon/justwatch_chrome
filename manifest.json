@@ -42,7 +42,8 @@
         "https://www.tvtime.com/*",
         "https://www.allmovie.com/movie/*",
         "https://trailers.apple.com/*",
-        "https://www.thetvdb.com/series/*"
+        "https://www.thetvdb.com/series/*",
+        "https://simkl.com/movies/*", "https://simkl.com/tv/*"
       ],
       "js": ["main.js"],
       "css": [ "style.css" ]
