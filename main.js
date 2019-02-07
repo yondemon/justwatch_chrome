@@ -56,104 +56,39 @@ class JustWatchChrome {
       if(debug) console.log(showdata);
     }
 
-    if(location.hostname.match('filmaffinity.com')) {
-      // console.log('filmaffinity.com');
-      this.reviewBar = document.getElementsByClassName('movie-info')[0];
-      this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  
-
-      if( /TV\)/.test( this.titleFull ) ) {
-        this.type = "show";
-
-      } else {
-        this.type = "movie";
-      }
-
-    } else if(location.hostname.match('metacritic.com')) {
-      // HAS LDJSON
-      this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
-      switch(this.type){
-        case 'movie':
-          this.reviewBar = document.getElementById('nav_to_awards');
-          break;
-        case 'show':
-          this.reviewBar = document.getElementsByClassName('product_data_summary')[0];
-          break;
-      }
-    } else if(location.hostname.match('themoviedb.org')) {
-
-      this.reviewBar = document.getElementsByClassName('header')[0];
-      this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  
-      this.year = this.extractYear(document.getElementsByClassName('release_date')[0].innerText);
-
-    } else if(location.hostname.match('letterboxd.com')) {
-
-      //this.reviewBar = document.getElementsByClassName('col-main')[0];
-      this.reviewBar = document.getElementById('featured-film-header');
-      this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  
-      //this.year = this.extractYear(document.getElementsByClassName('release_date')[0].innerText);
-      this.year = this.extractYear(document.querySelectorAll('*[itemprop="datePublished"]')[0].innerText);
-      // 
-    } else if(location.hostname.match('abc.es')) {
-
-      this.type = "movie";
-      this.reviewBar = document.getElementsByClassName('horario-emision')[0];
-      this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  
-      this.year = this.extractYear(this.titleFull);
-    } else if(location.hostname.match('trakt.tv')) {
+    this.ready = false;
+    for (let hostname in supportedWeb) {
       
-      if(location.pathname.match('shows')) {
-        this.type = "show";
-      } else { // "movies"
-        this.type = "movie";    
-      }
-      this.reviewBar = document.getElementById('huckster-desktop-wrapper');
-      this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
-      this.year = this.extractYear(document.querySelectorAll('h1 .year')[0].innerText);
-    } else if(location.hostname.match('tvtime.com')) {
-      this.reviewBar = document.getElementsByClassName('show-nav')[0];
-      this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
-      this.year = this.extractYear(document.querySelectorAll('meta[itemprop="startDate"]')[0].getAttribute('content'));
-      this.type = "show";
-    } else if(location.hostname.match('allmovie.com')) {
-      this.reviewBar = document.getElementsByClassName('affiliate-links')[0];
-      this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
-      this.year = this.extractYear(document.getElementsByClassName('release-year')[0].getAttribute('content'));
-      this.type = "movie";
-    } else {
-      
-      this.ready = false;
-      for (let hostname in supportedWeb) {
+      // if(location.hostname.match(hostname)){
+      if(location.href.match(hostname)){          
+        console.log(hostname);
+
+        this.reviewBar = supportedWeb[hostname].block();
+        this.titleFull = (this.title == null)? supportedWeb[hostname].title() : this.title;
         
-        // if(location.hostname.match(hostname)){
-        if(location.href.match(hostname)){          
-          console.log(hostname);
-
-          this.reviewBar = supportedWeb[hostname].block();
-          
-          this.titleFull = (this.title == null)? supportedWeb[hostname].title() : this.title;
-          
-          var year = this.extractYear( supportedWeb[hostname].year() );
-          if (this.year == null){
-            this.year = year;
-          } else {
-            this.yearAlt = year;
-          }
-
-          if (this.type == null){
-            this.type = supportedWeb[hostname].type;
-          }
-
-          this.ready = true;
-          break;
+        var year = this.extractYear( supportedWeb[hostname].year() );
+        if (this.year == null){
+          this.year = year;
+        } else {
+          this.yearAlt = year;
         }
-      }
+        
+        if (this.type == null){
+          this.type = supportedWeb[hostname].type;
+        }
 
-      if (!this.ready) {
-        console.log('error');
-      } else {
-        console.log(this);
+        this.ready = true;
+        console.log('ready',this);
+        break;
       }
     }
+
+    if (!this.ready) {
+      console.log('error');
+    } else {
+      console.log(this);
+    }
+    
 
     if (typeof this.reviewBar !== 'undefined') {
       var div = document.createElement("div");
@@ -182,11 +117,17 @@ class JustWatchChrome {
         this.year = null;
       }
 
-      if ( this.yearAlt == null ){
+      if ( this.yearAlt == null && this.year){
         this.yearAlt = this.year - 1;
       }
 
-      if (debug) console.log( 'T: "' + this.titleFull + '"" t: "' +  this.title + '" Y:' + this.year + ' Y:' + this.yearAlt );
+      if ( matches[2] ){
+        this.type = 'show';
+      } else {
+        this.type = 'movie';
+      }
+      
+      if (debug) console.log( 'T: "' + this.titleFull + '"" t: "' +  this.title + '" Y:' + this.year + ' Y:' + this.yearAlt + ' t:' + this.type);
       
       if (this.title !== null) {
         var xhr = new XMLHttpRequest();
@@ -674,6 +615,11 @@ var supportedWeb = {
     title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content'); },
     year: function(){ return document.querySelectorAll('title')[0].innerText }, // TODO: Improve (there is a js object to look inside)
   },
+  'filmaffinity.com': {
+    block: function(){ return document.getElementsByClassName('movie-info')[0]; },
+    title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content'); },
+    year: function(){ return null; },
+  },
 /*
   'fotogramas.es': {
     block: function(){ return document.getElementsByClassName('ficha')[0]; },
@@ -681,6 +627,31 @@ var supportedWeb = {
     year: function(){ return document.querySelectorAll('time[itemprop="dateCreated"]')[0].getAttribute('datetime'); },
   },
 */
+  'trakt.tv/movies': {
+    block: function(){ return document.getElementById('huckster-desktop-wrapper'); },
+    title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content'); },
+    year: function(){ return document.querySelectorAll('h1 .year')[0].innerText; },
+    type: "movie",
+  },
+  'trakt.tv/shows': {
+    block: function(){ return document.getElementById('huckster-desktop-wrapper'); },
+    title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content'); },
+    year: function(){ return document.querySelectorAll('h1 .year')[0].innerText; },
+    type: "show",
+  },
+  'metacritic.com/movie': {
+    // HAS LDJSON
+    block: function(){ return document.getElementsByClassName('esite_list')[0]; },
+    title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content'); },
+    year: function(){ return null; },
+    type: "movie",
+  },
+  'metacritic.com/tv': {
+    block: function(){ return document.getElementsByClassName('esite_list')[0]; },
+    title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content'); },
+    year: function(){ return document.querySelectorAll('.release_data .data')[0].innerText; },
+    type: "show",
+  },
   'cinefilica.es': {
     block: function(){ return document.querySelectorAll('title-primary-details-panel')[0]; },
     title: function(){ return document.querySelectorAll('title')[0].innerText; },
@@ -692,7 +663,35 @@ var supportedWeb = {
         //titleFull = document.querySelectorAll('span[itemprop="name"]')[0].innerText;
     year: function(){ return document.querySelectorAll('head title')[0].innerText; },
   },
-
+  'themoviedb.org': {
+    block: function(){ return document.getElementsByClassName('header')[0]; },
+    title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  },
+    year: function(){ return document.getElementsByClassName('release_date')[0].innerText; },
+  },
+  'abc.es': {
+    block: function(){ return document.getElementsByClassName('datos-ficha')[0]; },
+    title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content'); },
+    year:  function(){ return null; },
+    type: "movie",
+  },
+  'letterboxd.com': {
+    block: function(){ return document.getElementById('featured-film-header'); },
+    title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content'); },
+    year:  function(){ return document.querySelectorAll('*[itemprop="datePublished"]')[0].innerText; },
+    type: "movie",
+  },
+  'tvtime.com': {
+    block: function(){ return document.getElementsByClassName('show-nav')[0]; },
+    title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content'); },
+    year:  function(){ return document.querySelectorAll('meta[itemprop="startDate"]')[0].getAttribute('content'); },
+    type: "show",
+  },
+  'allmovie.com': {
+    block: function(){ return document.getElementsByClassName('affiliate-links')[0]; },
+    title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content'); },
+    year:  function(){ return document.getElementsByClassName('release-year')[0].getAttribute('content'); },
+    type: "movie",
+  },
   'trailers.apple.com': {
     waitForSelector: 'h1.replaced',
     block: function(){ return document.querySelectorAll('header#main-header')[0]; },
