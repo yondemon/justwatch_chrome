@@ -56,53 +56,7 @@ class JustWatchChrome {
       if(debug) console.log(showdata);
     }
 
-    if(location.hostname.match('imdb')) {
-      //console.log('imdb');
-      this.reviewBar = document.getElementsByClassName('plot_summary_wrapper')[0];
-      //titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
-      this.titleFull = document.querySelectorAll('meta[name="title"]')[0].getAttribute('content');
-
-      var tmpYear = document.querySelectorAll('.titleBar *[itemprop="datePublished"]');
-      if( tmpYear.length > 0 ){
-        this.release_date = tmpYear[0].content;
-        this.year = this.extractYear();  
-      }
-
-    } else if(location.hostname.match('rottentomatoes')) {
-      //console.log('rottentomatoes');  
-      // HAS LDJSON
-      this.reviewBar = document.getElementById('watch-it-now');
-      this.titleFull = document.getElementsByTagName('h1')[0].innerText;
-
-      if(this.year == null){
-        this.year = document.querySelectorAll('span.year')[0].innerText;
-      }
-
-    } else if(location.hostname.match('tv.com')) {
-      //console.log('tv.com');
-      // HAS LDJSON
-      this.reviewBar = document.getElementsByClassName('show_stats _clearfix')[0];
-      this.titleFull = document.getElementsByTagName('h1')[0].innerText;
-
-      this.year = this.extractYear(document.getElementsByClassName('tagline')[0].innerText);
-
-    } else if(location.hostname.match('sensacine.com')) {
-      //console.log('sensacine.com');
-      if(location.pathname.match('series')) {
-        this.type = "show";
-        this.reviewBar = document.getElementsByClassName('module-actionbar')[0];
-        this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
-
-      } else {
-        this.type = "movie";
-        this.reviewBar = document.getElementsByClassName('card-movie-overview')[0];
-        this.titleFull = document.getElementsByClassName('titlebar-title')[0].innerText;
-
-        this.year = this.extractYear(document.getElementsByClassName('date')[0].innerText);
-        this.yearAlt = this.extractYear(document.getElementsByTagName('title')[0].innerText);
-      }
-
-    } else if(location.hostname.match('filmaffinity.com')) {
+    if(location.hostname.match('filmaffinity.com')) {
       // console.log('filmaffinity.com');
       this.reviewBar = document.getElementsByClassName('movie-info')[0];
       this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');  
@@ -114,23 +68,6 @@ class JustWatchChrome {
         this.type = "movie";
       }
 
-    } else if(location.hostname.match('fotogramas.es')) {
-      //console.log('fotogramas.es');
-      this.reviewBar = document.getElementsByClassName('ficha')[0];
-      this.titleFull = document.querySelectorAll('h1[itemprop="name"]')[0].innerText;  
-      this.year = document.querySelectorAll('time[itemprop="dateCreated"]')[0].getAttribute('datetime');
-
-    } else if(location.hostname.match('cinefilica.es')) {
-      //console.log('cinefilica.es');
-      this.reviewBar = document.getElementById('ko-bind');
-      this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
-      
-    } else if(location.hostname.match('ecartelera.com')) {
-      //console.log('ecartelera.com');
-      this.reviewBar = document.getElementById('scorebox');
-      this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
-      //titleFull = document.querySelectorAll('span[itemprop="name"]')[0].innerText;
-      this.year = this.extractYear(document.querySelectorAll('head title')[0].innerText);
     } else if(location.hostname.match('metacritic.com')) {
       // HAS LDJSON
       this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
@@ -182,9 +119,40 @@ class JustWatchChrome {
       this.titleFull = document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
       this.year = this.extractYear(document.getElementsByClassName('release-year')[0].getAttribute('content'));
       this.type = "movie";
-      
     } else {
-      console.log('error');
+      
+      this.ready = false;
+      for (let hostname in supportedWeb) {
+        
+        // if(location.hostname.match(hostname)){
+        if(location.href.match(hostname)){          
+          console.log(hostname);
+
+          this.reviewBar = supportedWeb[hostname].block();
+          
+          this.titleFull = (this.title == null)? supportedWeb[hostname].title() : this.title;
+          
+          var year = this.extractYear( supportedWeb[hostname].year() );
+          if (this.year == null){
+            this.year = year;
+          } else {
+            this.yearAlt = year;
+          }
+
+          if (this.type == null){
+            this.type = supportedWeb[hostname].type;
+          }
+
+          this.ready = true;
+          break;
+        }
+      }
+
+      if (!this.ready) {
+        console.log('error');
+      } else {
+        console.log(this);
+      }
     }
 
     if (typeof this.reviewBar !== 'undefined') {
@@ -212,6 +180,10 @@ class JustWatchChrome {
       } else {
         this.title = this.titleFull;
         this.year = null;
+      }
+
+      if ( this.yearAlt == null ){
+        this.yearAlt = this.year - 1;
       }
 
       if (debug) console.log( 'T: "' + this.titleFull + '"" t: "' +  this.title + '" Y:' + this.year + ' Y:' + this.yearAlt );
@@ -587,6 +559,23 @@ class JustWatchChrome {
     return false;
   }
 
+  getWaitForSelector(){
+    for (let hostname in supportedWeb) {
+      if(location.hostname.match(hostname)){
+        console.log(hostname);
+      
+        if (typeof supportedWeb[hostname].waitForSelector != 'undefined'){
+          return supportedWeb[hostname].waitForSelector;
+        } else {
+          return '';
+        }
+        
+      }
+
+    }
+    return '';
+  }
+
 }
 
 var providers = {
@@ -647,6 +636,72 @@ var price = {
   'BRL': 'R$',
 }
 
+var supportedWeb = {
+  'imdb' : {
+    block: function(){ return document.getElementsByClassName('plot_summary_wrapper')[0]; },
+    title: function(){ return document.querySelectorAll('meta[name="title"]')[0].getAttribute('content'); },
+          // document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content');
+    year: function(){ 
+      var tmpYear = document.querySelectorAll('.titleBar *[itemprop="datePublished"]');
+      //         this.release_date = tmpYear[0].content;
+      return ( tmpYear.length > 0 )? tmpYear[0].content : null;
+     },
+    // no type
+  },
+  'rottentomatoes': {
+    // HAS LDJSON
+    block: function(){ return document.getElementById('watch-it-now'); },
+    title: function(){ return document.getElementsByTagName('h1')[0].innerText; },
+    year: function(){ return document.querySelectorAll('span.year')[0].innerText; },
+    // type from LDJSON
+  },
+  'tv.com': {
+    // HAS LDJSON
+    block: function(){ return document.getElementsByClassName('show_stats _clearfix')[0]; },
+    title: function(){ return document.getElementsByTagName('h1')[0].innerText; },
+    year: function(){ return document.getElementsByClassName('tagline')[0].innerText; }, // TODO: Not working on ended series
+  },
+  'sensacine.com/peliculas': {
+    type: "movie",
+    block: function(){ return document.getElementsByClassName('movie-card-overview')[0]; },
+    title: function(){ return document.getElementsByClassName('titlebar-title')[0].innerText; },
+    year: function(){ return document.getElementsByClassName('date')[0].innerText; },
+    // yearAlt: function(){ return document.getElementsByTagName('title')[0].innerText; },
+  },
+  'sensacine.com/series': {
+    type: "show",
+    block: function(){ return document.getElementsByClassName('entity-card-overview')[0]; },
+    title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content'); },
+    year: function(){ return document.querySelectorAll('title')[0].innerText }, // TODO: Improve (there is a js object to look inside)
+  },
+/*
+  'fotogramas.es': {
+    block: function(){ return document.getElementsByClassName('ficha')[0]; },
+    title: function(){ return document.querySelectorAll('h1[itemprop="name"]')[0].innerText; },
+    year: function(){ return document.querySelectorAll('time[itemprop="dateCreated"]')[0].getAttribute('datetime'); },
+  },
+*/
+  'cinefilica.es': {
+    block: function(){ return document.querySelectorAll('title-primary-details-panel')[0]; },
+    title: function(){ return document.querySelectorAll('title')[0].innerText; },
+    year: function(){ return document.querySelectorAll('h1.title .year')[0].innerText; },
+  },
+  'ecartelera.com': {
+    block: function(){ return document.getElementById('scorebox'); },
+    title: function(){ return document.querySelectorAll('meta[property="og:title"]')[0].getAttribute('content'); },
+        //titleFull = document.querySelectorAll('span[itemprop="name"]')[0].innerText;
+    year: function(){ return document.querySelectorAll('head title')[0].innerText; },
+  },
+
+  'trailers.apple.com': {
+    waitForSelector: 'h1.replaced',
+    block: function(){ return document.querySelectorAll('header#main-header')[0]; },
+    title: function(){ return document.querySelectorAll('h1.replaced')[0].innerText; },
+    year: function(){ return document.getElementsByClassName('release')[0].innerText },
+    type: "movie",
+  }
+}
+
 var plugin;
 
 document.body.onload = function(){
@@ -659,7 +714,23 @@ document.body.onload = function(){
         l18n = value['justwatch-l18n'];
       }
 
-      plugin.execute();
+      var waitForSelector = plugin.getWaitForSelector();
+
+      if (waitForSelector.length == 0){
+        console.log('NO wait');
+          plugin.execute();
+      } else {
+        console.log("waitng for [" + waitForSelector + "]");
+
+        var checkExist = setInterval(function() {
+          if (document.querySelectorAll(waitForSelector).length) {
+            console.log("Exists! [" + waitForSelector + "]");
+            plugin.execute();
+
+            clearInterval(checkExist);
+          }
+        }, 100);
+      }
 
     });
 };
