@@ -182,7 +182,7 @@ class JustWatchChrome {
       div.classList.add('justwatch');
 
       // var titleRegexp = /(.*)\s\(.*?([\d]{4}).*?\)/;
-      var titleRegexp = /^([^(]*)(\s\(.*\T\V\))?\s\(([\d]{4})\)/;
+      var titleRegexp = /(.*)(\s\(.*\T\V\))?\s\(.*?([\d]{4}).*?\)/;
       var matches;
       matches = titleRegexp.exec(this.titleFull);
       console.log(matches);
