@@ -13,7 +13,10 @@
   font-weight: bold;
   padding: 0.4rem 1rem;
   display: block;
-  margin-bottom: 0.2rem;
+}
+
+.justwatch .justwatch-offers {
+  margin-top: 0.2rem;
 }
 
 .justwatch .justwatch-offers ul {
@@ -70,4 +73,25 @@
   font-size: 0.7rem;
   font-weight: bold;
   display: block;
+}
+
+.justwatch .justwatch-ratings {
+  background-color: #0C151D;
+  color: #7f7f7f;
+  padding-left: 1rem;
+}
+
+.justwatch .justwatch-ratings ul {
+  list-style: none;
+  padding-left: 0px;
+  clear: both;
+}
+
+.justwatch .justwatch-ratings ul li {
+  display: inline-block;
+  margin-right: 0.4rem;
+}
+
+.justwatch .justwatch-ratings ul li span {
+  font-weight: bold;
 }

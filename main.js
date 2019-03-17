@@ -213,6 +213,7 @@ class JustWatchChrome {
         
         nomatches = false;
 
+        div.appendChild( this.getRatingsHTML(item.scoring) );
         div.appendChild( this.getOffersHTML(item.offers) );
 
       }  else {
@@ -229,6 +230,7 @@ class JustWatchChrome {
             if(!done){
               nomatches = false;
               this.setPanelTitleURL(item);
+              div.appendChild( this.getRatingsHTML(item.scoring) );
               div.appendChild( this.getOffersHTML(item.offers) );
 
               this.movieJustWatchData = this.getTitle(this.type, item.id);
@@ -332,6 +334,37 @@ class JustWatchChrome {
       old[0].classList.remove("cheapest");
     }
 
+  }
+
+  getRatingsHTML(ratings){
+    var ratingsDiv = document.createElement("div");
+    ratingsDiv.classList.add('justwatch-ratings');
+
+    var ratingsUl = document.createElement("ul");
+    ratingsDiv.appendChild( ratingsUl );
+
+    for (var rating of ratings) {
+      let provider = rating.provider_type.split(':');
+      switch(rating.provider_type){
+        case 'imdb:score':
+        case 'tmdb:score':
+          ratingsUl.insertAdjacentHTML('beforeend',
+            '<li class="jwc-rating-'+provider[0]+'"><span class="jwc-platform-'+provider[0]+'">' + provider[0] + '</span> ' + rating.value + '/10</li>');
+          break;
+        case 'tomato:meter':
+          ratingsUl.insertAdjacentHTML('beforeend',
+            '<li class="jwc-rating-'+provider[0]+'"><span class="jwc-platform-'+provider[0]+'">' + provider[0] + '</span> ' + rating.value + '%</li>');
+          break;
+        case 'metacritic:score':
+          ratingsUl.insertAdjacentHTML('beforeend',
+            '<li class="jwc-rating-'+provider[0]+'"><span class="jwc-platform-'+provider[0]+'">' + provider[0] + '</span> ' + rating.value + '</li>');
+          break
+        default:
+          break;
+      }
+    }
+
+    return ratingsDiv;    
   }
 
   getOffersHTML(offers){
