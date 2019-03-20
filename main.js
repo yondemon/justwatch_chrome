@@ -816,6 +816,24 @@ var supportedWeb = {
     title: function(){ return document.querySelectorAll('h1.replaced')[0].innerText; },
     year: function(){ return document.getElementsByClassName('release')[0].innerText },
     type: "movie",
+  },
+
+  'netflix.com': {
+    waitForSelector: '.jawBoneContainer',
+    block: function(){ return document.querySelectorAll('.jawBoneContainer')[0]; },
+    title: function(){ return document.querySelectorAll('h1 .title-small img')[0].getAttribute('alt'); },
+    year: function(){ return document.getElementsByClassName('year')[0].innerText },
+  },
+  'primevideo.com': {
+    block: function(){ return document.querySelectorAll('.av-meta-info-wrapper')[0]; },
+    title: function(){ return document.querySelectorAll('h1')[0].innerText; },
+    year: function(){ return document.querySelectorAll('.av-badge-text[data-automation-id="release-year-badge"]')[0].innerText }, 
+  },
+  'hboespana.com': {
+    waitForSelector: 'h1[data-automation="title"]',
+    block: function(){ return document.querySelectorAll('.page > div')[0]; },
+    title: function(){ return document.querySelectorAll('h1')[0].innerText; },
+    year: function(){ return document.querySelectorAll('div[data-automation="meta_year"]')[0].innerText },     
   }
 }
 

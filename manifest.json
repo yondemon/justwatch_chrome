@@ -41,7 +41,11 @@
         "https://trailers.apple.com/*",
         "https://www.thetvdb.com/series/*",
         "https://simkl.com/movies/*", "https://simkl.com/tv/*",
-        "https://www.criticker.com/film/*", "https://www.criticker.com/tv/*"
+        "https://www.criticker.com/film/*", "https://www.criticker.com/tv/*",
+
+        "https://www.netflix.com/title/*",
+        "https://www.primevideo.com/detail/*",
+        "https://es.hboespana.com/*"
       ],
       "js": ["main.js"],
       "css": [ "style.css" ]
