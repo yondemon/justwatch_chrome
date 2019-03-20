@@ -343,25 +343,69 @@ class JustWatchChrome {
     var ratingsUl = document.createElement("ul");
     ratingsDiv.appendChild( ratingsUl );
 
+    var ratingSites = {
+      'imdb': {
+        'url': 'https://www.imdb.com/title/',
+      },
+      'tmdb': {
+        'url': 'https://www.themoviedb.org/movie/',
+      },
+      'tomato': {
+        'url': 'https://www.rottentomatoes.com/m/',
+      }
+    }
+
+    let cleanedRatings = {};
+    console.log({ratings});
     for (var rating of ratings) {
-      let provider = rating.provider_type.split(':');
+      let [provider] = rating.provider_type.split(':');
       switch(rating.provider_type){
         case 'imdb:score':
         case 'tmdb:score':
-          ratingsUl.insertAdjacentHTML('beforeend',
-            '<li class="jwc-rating-'+provider[0]+'"><span class="jwc-platform-'+provider[0]+'">' + provider[0] + '</span> ' + rating.value + '/10</li>');
-          break;
         case 'tomato:meter':
-          ratingsUl.insertAdjacentHTML('beforeend',
-            '<li class="jwc-rating-'+provider[0]+'"><span class="jwc-platform-'+provider[0]+'">' + provider[0] + '</span> ' + rating.value + '%</li>');
-          break;
         case 'metacritic:score':
-          ratingsUl.insertAdjacentHTML('beforeend',
-            '<li class="jwc-rating-'+provider[0]+'"><span class="jwc-platform-'+provider[0]+'">' + provider[0] + '</span> ' + rating.value + '</li>');
+          if(typeof cleanedRatings[provider] == 'undefined')
+            cleanedRatings[provider] = {};
+
+          cleanedRatings[provider]['rating'] = rating.value;
+          break;
+        case 'tomato:id':
+        case 'tmdb:id':
+          if(typeof cleanedRatings[provider] == 'undefined')
+            cleanedRatings[provider] = {};
+          
+          cleanedRatings[provider]['id'] = rating.value;
+          break;
+        default:
+          break;
+      }
+    }
+    console.log({cleanedRatings});
+
+    for (const [provider, content] of Object.entries(cleanedRatings) ){
+      let ratingStr = '';
+      switch(provider){
+        case 'imdb':
+        case 'tmdb':
+          ratingStr = content.rating + '/10';
+          break;
+        case 'tomato':
+          ratingStr = content.rating + '%';
+          break;
+        case 'metacritic':
+          ratingStr = content.rating;
           break
         default:
           break;
       }
+      if (ratingStr != '') {
+        ratingsUl.insertAdjacentHTML('beforeend',
+            '<li class="jwc-rating-'+provider+'">' +
+            (content.id? '<a href="'+ ratingSites[provider]['url']+content.id+'">':'') +
+            '<span class="jwc-platform-'+provider+'">' + provider + '</span> ' + ratingStr +
+            (content.id? '</a>':'') +
+            '</li>');
+      }    
     }
 
     return ratingsDiv;    
