@@ -3,7 +3,7 @@ const browser = window.browser || window.chrome;
 
 var debug = true;
 var l18n = 'es_ES';
-const API_DOMAIN = 'api.justwatch.com';
+const API_DOMAIN = 'apis.justwatch.com';
 const DOMAIN = 'justwatch.com';
 
 class JustWatchChrome {
@@ -138,7 +138,9 @@ class JustWatchChrome {
         
         var localization = l18n;
         //var url = 'https://api.justwatch.com/titles/'+localization+'/popular';
-        var url = 'https://'+API_DOMAIN+'/titles/'+localization+'/popular';
+        //var url = 'https://'+API_DOMAIN+'/titles/'+localization+'/popular';
+        https://apis.justwatch.com/content/titles/es_ES/popular
+        var url = 'https://'+API_DOMAIN+'/content/titles/'+localization+'/popular';
         //if (debug) console.log(url);
 
         xhr.open("POST", url, true);

@@ -12,6 +12,7 @@
 
   "permissions": [
     "https://api.justwatch.com/",
+    "https://apis.justwatch.com/",
     "storage"
   ],
 
