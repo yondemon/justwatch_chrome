@@ -9,7 +9,6 @@
           "48": "icon.48.png",
           "200": "icon.png"
           },
-
   "permissions": [
     "https://api.justwatch.com/",
     "https://apis.justwatch.com/",
@@ -48,7 +47,13 @@
         "https://www.primevideo.com/detail/*",
         "https://es.hboespana.com/*"
       ],
-      "js": ["main.js"],
+      "js": [
+        "lib/providers.js",
+        "lib/targets.js",
+        "lib/ratingsites.js",
+        "lib/utils.js",
+        "main.js"
+      ],
       "css": [ "style.css" ]
     }
   ],
