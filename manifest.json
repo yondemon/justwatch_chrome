@@ -57,5 +57,11 @@
       "css": [ "style.css" ]
     }
   ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  },
   "web_accessible_resources": ["providers/*"]
 }

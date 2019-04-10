@@ -95,6 +95,7 @@ class JustWatchChrome {
     if (typeof this.reviewBar !== 'undefined') {
       var div = document.createElement("div");
       div.classList.add('justwatch');
+      this.reviewBar.parentNode.insertBefore(div, this.reviewBar.nextSibling);
 
       // var titleRegexp = /(.*)\s\(.*?([\d]{4}).*?\)/;
       var titleRegexp = /(.*)(\s\(.*\T\V\))?\s\(.*?([\d]{4}).*?\)/;
@@ -134,41 +135,21 @@ class JustWatchChrome {
       if (debug) console.log( 'T: "' + this.titleFull + '"" t: "' +  this.title + '" Y:' + this.year + ' Y:' + this.yearAlt + ' t:' + this.type);
       
       if (this.title !== null) {
-        var xhr = new XMLHttpRequest();
-        
-        var localization = l18n;
-        //var url = 'https://api.justwatch.com/titles/'+localization+'/popular';
-        //var url = 'https://'+API_DOMAIN+'/titles/'+localization+'/popular';
-        https://apis.justwatch.com/content/titles/es_ES/popular
-        var url = 'https://'+API_DOMAIN+'/content/titles/'+localization+'/popular';
-        //if (debug) console.log(url);
-
-        xhr.open("POST", url, true);
-        xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
-        // xhr.setRequestHeader('User-Agent', 'JustWatch unofficial chrome extension (github.com/yondemon/justwatch_chrome/)');
-
         var $this = this;
-        xhr.onreadystatechange = (e) => {
-          if (xhr.readyState == 4) {
-            var resp = JSON.parse(xhr.responseText);
 
-            if (resp.total_results > 0) {
-              if(debug) console.log(resp.total_results + ' results');
-              if(debug) console.log(resp);
-              $this.printPanel(resp, div);      
+        chrome.runtime.sendMessage(
+          {
+            type: "fetchAPI", 
+            data: {
+              title: this.title, 
+              type: this.type,
+              localization: l18n
             }
-          }
-        };
-
-        var query = {"query":this.title};
-        if(typeof this.type != 'undefined'){
-          query.content_types = [this.type];
-        }
-        if(debug) console.log(query);
-        xhr.send( JSON.stringify( query ) );
-
-        //reviewBar[0].appendChild(div);
-        this.reviewBar.parentNode.insertBefore(div, this.reviewBar.nextSibling);
+          }, 
+          function(response) {
+            console.log(response);
+            $this.printPanel(response, div);
+          });
       }
 
     }
