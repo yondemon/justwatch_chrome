@@ -542,7 +542,7 @@ class JustWatchChrome {
       if(location.hostname.match(hostname)){
       
         if (typeof supportedWeb[hostname].waitForSelector != 'undefined'){
-          if(debug) console.log(hostname + ": waiting for [" + waitForSelector + "]");
+          if(debug) console.log(hostname + ": waiting for [" + supportedWeb[hostname].waitForSelector + "]");
 
           return supportedWeb[hostname].waitForSelector;
         } else {
