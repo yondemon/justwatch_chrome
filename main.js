@@ -156,7 +156,6 @@ class JustWatchChrome {
 
   }
 
-
   extractYear(string){
     var matches = /(\d){4}/.exec(string);
     if( matches != null){
@@ -231,7 +230,7 @@ class JustWatchChrome {
 
         if (debug) this.noMatchesP.innerHTML += '<p>T:'+this.titleFull +' Y:'+this.year + ' Y:'+this.yearAlt +'</p>';   
 
-        this.listResults(response);
+        this.showListResults(response);
 
         div.appendChild( this.getOffersHTML(response.items[0].offers) );
 
