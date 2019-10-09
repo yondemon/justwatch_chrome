@@ -1,7 +1,7 @@
 console.log("JustWatch!");
 const browser = window.browser || window.chrome;
 
-var debug = false;
+var debug = true;
 var l18n = 'es_ES';
 const API_DOMAIN = 'apis.justwatch.com';
 const DOMAIN = 'justwatch.com';
@@ -41,6 +41,9 @@ class JustWatchChrome {
       if (debug) console.log(this.ldJSON);
 
       this.ldJSON = this.ldJSON.replace(/(\r\n|\n|\r)/gm,"");
+      //this.ldJSON = this.ldJSON.replace(/(\/\*[^*]*\*\/)|(\/\/[^*]*)/g, '');
+      this.ldJSON = this.ldJSON.replace(/(\/\*[^*]*\*\/)/g, '');
+
       var showdata = JSON.parse(this.ldJSON.trim());
 
       if(showdata['@type'] == "TVSeries" || showdata['@type'] == "Movie"){
