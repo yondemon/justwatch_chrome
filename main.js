@@ -296,7 +296,9 @@ class JustWatchChrome {
       replacementA.classList.add('title');
       originalSpan.parentNode.replaceChild(replacementA,originalSpan);
 
-      document.getElementById('justwatch-title-full').innerHTML = item.original_title + ' (' + item.original_release_year + ')';    
+      console.log(item);
+
+      document.getElementById('justwatch-title-full').innerHTML = item.title + ' (' + item.original_release_year + ')';    
   }
 
   removeNoMatches(){
