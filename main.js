@@ -40,7 +40,8 @@ class JustWatchChrome {
       this.ldJSON = this.ldJSON[0].innerText;
       if (debug) console.log(this.ldJSON);
 
-      this.ldJSON = this.ldJSON.replace(/(\r\n|\n|\r)/gm,"");
+      this.ldJSON = this.ldJSON.replace(/(\r\n|\n|\r)/gm, '');
+      this.ldJSON = this.ldJSON.replace(/(\/\*[^*]*\*\/)/g, '');
       var showdata = JSON.parse(this.ldJSON.trim());
 
       if(showdata['@type'] == "TVSeries" || showdata['@type'] == "Movie"){
@@ -52,8 +53,15 @@ class JustWatchChrome {
           this.type = "movie";
         }
         this.title = showdata['name'];
-        this.year = this.extractYear( showdata['datePublished'] );
+        
+        if (typeof showdata['datePublished'] != 'undefined'){
+          this.year = this.extractYear( showdata['datePublished'] );
+        } else if (typeof showdata['releasedEvent'] != 'undefined'){
+          this.year = this.extractYear( showdata['releasedEvent'][0].startDate );
+        }
+
         if(debug) console.log(showdata);
+
       } else {
         this.ldJSON = null;
       }
