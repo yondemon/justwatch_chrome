@@ -55,8 +55,15 @@ class JustWatchChrome {
           this.type = "movie";
         }
         this.title = showdata['name'];
-        this.year = this.extractYear( showdata['datePublished'] );
+        
+        if (typeof showdata['datePublished'] != 'undefined'){
+          this.year = this.extractYear( showdata['datePublished'] );
+        } else if (typeof showdata['releasedEvent'] != 'undefined'){
+          this.year = this.extractYear( showdata['releasedEvent'][0].startDate );
+        }
+
         if(debug) console.log(showdata);
+
       } else {
         this.ldJSON = null;
       }
@@ -172,7 +179,7 @@ class JustWatchChrome {
     for(let [index,item] of response.items.entries() ){
       var liElement = document.createElement('li');
       var resultlink = document.createElement('a');
-      resultlink.innerHTML = item.original_title + "&nbsp;("+ item.original_release_year+")";
+      resultlink.innerHTML = item.title + "&nbsp;("+ item.original_release_year+")";
       resultlink.setAttribute('href','http://'+ DOMAIN + item.full_path);
       liElement.appendChild( resultlink );
       this.noMatchesP.appendChild( liElement );
@@ -289,7 +296,9 @@ class JustWatchChrome {
       replacementA.classList.add('title');
       originalSpan.parentNode.replaceChild(replacementA,originalSpan);
 
-      document.getElementById('justwatch-title-full').innerHTML = item.original_title + ' (' + item.original_release_year + ')';    
+      console.log(item);
+
+      document.getElementById('justwatch-title-full').innerHTML = item.title + ' (' + item.original_release_year + ')';    
   }
 
   removeNoMatches(){
