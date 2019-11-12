@@ -1,7 +1,7 @@
 console.log("JustWatch!");
 const browser = window.browser || window.chrome;
 
-var debug = false;
+var debug = true;
 var l18n = 'es_ES';
 const API_DOMAIN = 'apis.justwatch.com';
 const DOMAIN = 'justwatch.com';

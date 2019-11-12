@@ -45,7 +45,8 @@
 
         "https://www.netflix.com/title/*",
         "https://www.primevideo.com/detail/*",
-        "https://es.hboespana.com/*"
+        "https://es.hboespana.com/*",
+        "https://rakuten.tv/es/movies/*"
       ],
       "js": [
         "lib/providers.js",
