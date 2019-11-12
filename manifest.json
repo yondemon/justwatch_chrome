@@ -46,6 +46,7 @@
         "https://www.netflix.com/title/*",
         "https://www.primevideo.com/detail/*",
         "https://es.hboespana.com/*",
+		    "https://www.tvmaze.com/shows/*",
         "https://rakuten.tv/es/movies/*"
       ],
       "js": [
