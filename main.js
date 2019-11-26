@@ -1,7 +1,7 @@
 console.log("JustWatch!");
 const browser = window.browser || window.chrome;
 
-var debug = false;
+var debug = true;
 var l18n = 'es_ES';
 const API_DOMAIN = 'apis.justwatch.com';
 const DOMAIN = 'justwatch.com';
@@ -179,7 +179,7 @@ class JustWatchChrome {
     for(let [index,item] of response.items.entries() ){
       var liElement = document.createElement('li');
       var resultlink = document.createElement('a');
-      resultlink.innerHTML = item.original_title + "&nbsp;("+ item.original_release_year+")";
+      resultlink.innerHTML = item.title + "&nbsp;("+ item.original_release_year+")";
       resultlink.setAttribute('href','http://'+ DOMAIN + item.full_path);
       liElement.appendChild( resultlink );
       this.noMatchesP.appendChild( liElement );
