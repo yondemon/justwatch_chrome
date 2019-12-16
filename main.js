@@ -157,7 +157,7 @@ class JustWatchChrome {
             }
           }, 
           function(response) {
-            console.log(response);
+            if (debug) console.log(response);
             $this.printPanel(response, div);
           });
       }
@@ -255,29 +255,6 @@ class JustWatchChrome {
     }
   }
 
-  async getTitle(content_type, title_id)
-  {
-    /*
-    if(debug) console.log('getTitle',{content_type, title_id})
-    title_id = encodeURIComponent(title_id);
-    content_type = encodeURIComponent(content_type);
-    //var locale = encodeURIComponent(this._options.locale);
-
-    const xhr = new XMLHttpRequest();
-    const locale = l18n;
-    // return await this.request('GET', '/titles/'+content_type+'/'+title_id+'/locale/'+locale);
-
-    const url = 'https://'+API_DOMAIN + '/titles/'+content_type+'/'+title_id+'/locale/'+locale;
-    xhr.open("GET",url);
-    xhr.send();
-    xhr.onreadystatechange = (e) => {
-      if(xhr.readyState == 4){
-        return xhr.responseText;
-      }
-    }
-    */
-  }
-
   getPanelTitleHTML(){
       return '<span id="justwatch-title" class="title">JustWatch:'+ ( (debug)?'['+l18n +']':'') +' <span id="justwatch-title-full">'+this.titleFull+'</span></span>';
   }
@@ -295,8 +272,6 @@ class JustWatchChrome {
       replacementA.setAttribute('id','justwatch-title');
       replacementA.classList.add('title');
       originalSpan.parentNode.replaceChild(replacementA,originalSpan);
-
-      console.log(item);
 
       document.getElementById('justwatch-title-full').innerHTML = item.title + ' (' + item.original_release_year + ')';    
   }
