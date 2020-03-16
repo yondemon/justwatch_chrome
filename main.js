@@ -482,6 +482,16 @@ class JustWatchChrome {
                 + offer.presentation_type + '</span></a></li>\n');
               break;
 
+          case 'ads':
+            ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
+              '<li id="offer-'+index+'" '
+                + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
+                +    ' provider-'+offer.provider_id+' cheapest"><a href="' + url
+                + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
+                + offer.presentation_type + '</span></a></li>\n');
+              break;
+
+
           default:
             ulBlocks['other'].insertAdjacentHTML('beforeend',
               '<li id="offer-'+index+'" '
