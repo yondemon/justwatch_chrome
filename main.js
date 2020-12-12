@@ -20,7 +20,6 @@ class JustWatchChrome {
     this.type = null;
     this.release_date = null;
 
-
     this.noMatchesP = document.createElement("p");
     this.noMatchesP.setAttribute('id','justwatch-nomatches');
     this.noMatchesP.classList.add('message');
