@@ -1,7 +1,7 @@
 console.log("JustWatch!");
 const browser = window.browser || window.chrome;
 
-var debug = true;
+var debug = false;
 var l18n = 'es_ES';
 const API_DOMAIN = 'apis.justwatch.com';
 const DOMAIN = 'justwatch.com';
@@ -103,6 +103,7 @@ class JustWatchChrome {
     }
     
     if (typeof this.reviewBar !== 'undefined') {
+      if(debug) console.log('reviewBar');
       var div = document.createElement("div");
       div.classList.add('justwatch');
       this.reviewBar.parentNode.insertBefore(div, this.reviewBar.nextSibling);
