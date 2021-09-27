@@ -35,22 +35,18 @@ document.addEventListener('DOMContentLoaded', () => {
         window.close();
 
         browser.tabs.reload();
-
         //console.log('execute!');
         //execute();
-
     });
-
-    
-
 });
 
 var countries = {
-    'en_US' : 'USA',
+    'es_AR' : 'Argentina',
+    'pt_BR' : 'Brazil',
     'en_CA' : 'Canada',
-    'es_ES' : 'España',
     'de_DE' : 'Deutschland',
+    'es_ES' : 'España',
     'ja_JP' : 'Japan',
     'es_MX' : 'Mexico',
-    'pt_BR' : 'Brazil',
+    'en_US' : 'USA',
 }
