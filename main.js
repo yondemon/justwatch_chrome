@@ -1,7 +1,7 @@
 console.log("JustWatch!");
 const browser = window.browser || window.chrome;
 
-var debug = false;
+var debug = true;
 var l18n = 'es_ES';
 const API_DOMAIN = 'apis.justwatch.com';
 const DOMAIN = 'justwatch.com';
@@ -58,7 +58,10 @@ class JustWatchChrome {
         if (typeof showdata['datePublished'] != 'undefined'){
           this.year = this.extractYear( showdata['datePublished'] );
         } else if (typeof showdata['releasedEvent'] != 'undefined'){
-          this.year = this.extractYear( showdata['releasedEvent'][0].startDate );
+          if(showdata['releasedEvent'] instanceof Array)
+            this.year = this.extractYear( showdata['releasedEvent'][0].startDate );
+          else
+            this.year = this.extractYear( showdata['releasedEvent'].startDate );
         }
 
         if(debug) console.log(showdata);

@@ -26,7 +26,7 @@
         "https://*.imdb.com/title/*",
         "https://www.rottentomatoes.com/m/*",
         "http://www.tv.com/movies/*", "http://www.tv.com/shows/*",
-        "http://www.sensacine.com/peliculas/*", "http://www.sensacine.com/series/*",
+        "https://www.sensacine.com/peliculas/*", "https://www.sensacine.com/series/*",
         "https://www.filmaffinity.com/*/film*",
         // "http://www.fotogramas.es/Peliculas/*",
         "https://cinefilica.es/titles/*",
