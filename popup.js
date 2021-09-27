@@ -1,10 +1,7 @@
 const browser = window.browser || window.chrome;
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('popup loaded');
-
     var dropdownL18n = document.getElementById('select-l18n');
-    //console.log(dropdownL18n);
 
     countriesLength = countries.length;
     for (let key in countries) {
@@ -25,28 +22,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     dropdownL18n.addEventListener('change', () => {
-        console.log(dropdownL18n);
-        console.log(dropdownL18n.value);
-        var l18n = dropdownL18n.value;
-     
-        // SAVE
+        var l18n = dropdownL18n.value;     
         chrome.storage.sync.set({'justwatch-l18n': l18n});
 
         window.close();
-
         browser.tabs.reload();
-        //console.log('execute!');
-        //execute();
     });
 });
 
 var countries = {
-    'es_AR' : 'Argentina',
-    'pt_BR' : 'Brazil',
-    'en_CA' : 'Canada',
-    'de_DE' : 'Deutschland',
-    'es_ES' : 'España',
-    'ja_JP' : 'Japan',
-    'es_MX' : 'Mexico',
-    'en_US' : 'USA',
+    es_AR : 'Argentina',
+    en_AU : 'Australia',
+    pt_BR : 'Brazil',
+    en_CA : 'Canada',
+    de_DE : 'Deutschland',
+    es_ES : 'España',
+    ja_JP : 'Japan',
+    es_MX : 'Mexico',
+    en_US : 'USA',
 }
