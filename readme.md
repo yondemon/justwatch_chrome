@@ -30,6 +30,8 @@ Right now it gets info for this countries:
 * Japan
 * Mexico
 * Brazil
+* Argentina
+* Australia
 
 [JustWatch](https://www.justwatch.com/) has info from more than 30 countries... you can ask me for the next to wrap.
 

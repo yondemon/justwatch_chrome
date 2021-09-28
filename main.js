@@ -1,7 +1,7 @@
 console.log("JustWatch!");
 const browser = window.browser || window.chrome;
 
-var debug = true;
+var debug = false;
 var l18n = 'es_ES';
 const API_DOMAIN = 'apis.justwatch.com';
 const DOMAIN = 'justwatch.com';
@@ -19,7 +19,6 @@ class JustWatchChrome {
     this.yearAlt = null;
     this.type = null;
     this.release_date = null;
-
 
     this.noMatchesP = document.createElement("p");
     this.noMatchesP.setAttribute('id','justwatch-nomatches');
@@ -59,7 +58,10 @@ class JustWatchChrome {
         if (typeof showdata['datePublished'] != 'undefined'){
           this.year = this.extractYear( showdata['datePublished'] );
         } else if (typeof showdata['releasedEvent'] != 'undefined'){
-          this.year = this.extractYear( showdata['releasedEvent'][0].startDate );
+          if(showdata['releasedEvent'] instanceof Array)
+            this.year = this.extractYear( showdata['releasedEvent'][0].startDate );
+          else
+            this.year = this.extractYear( showdata['releasedEvent'].startDate );
         }
 
         if(debug) console.log(showdata);
@@ -103,6 +105,7 @@ class JustWatchChrome {
     }
     
     if (typeof this.reviewBar !== 'undefined') {
+      if(debug) console.log('reviewBar');
       var div = document.createElement("div");
       div.classList.add('justwatch');
       this.reviewBar.parentNode.insertBefore(div, this.reviewBar.nextSibling);
@@ -481,6 +484,16 @@ class JustWatchChrome {
                 + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
                 + offer.presentation_type + '</span></a></li>\n');
               break;
+
+          case 'ads':
+            ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
+              '<li id="offer-'+index+'" '
+                + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
+                +    ' provider-'+offer.provider_id+' cheapest"><a href="' + url
+                + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
+                + offer.presentation_type + '</span></a></li>\n');
+              break;
+
 
           default:
             ulBlocks['other'].insertAdjacentHTML('beforeend',
