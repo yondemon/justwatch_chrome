@@ -447,7 +447,7 @@ class JustWatchChrome {
                 +    ' provider-'+offer.provider_id+' '+(cheapest?'cheapest':'')+'"><a href="' + url
                 + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
                 + offer.presentation_type + '</span>  <span class="price">' 
-                + offer.retail_price + ' ' + currency[offer.currency] + '</span></a></li>\n');
+                + offer.retail_price + ' ' + (currency[offer.currency] || offer.currency ) + '</span></a></li>\n');
               break;
 
           case 'buy':
@@ -464,7 +464,7 @@ class JustWatchChrome {
                 +    ' provider-'+offer.provider_id+' '+(cheapest?'cheapest':'')+'"><a href="' + url
                 + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
                 + offer.presentation_type + '</span>  <span class="price">' 
-                + offer.retail_price + ' ' + currency[offer.currency] + '</span></a></li>\n');
+                + offer.retail_price + ' ' + (currency[offer.currency] || offer.currency ) + '</span></a></li>\n');
               break;
 
           case 'free':
@@ -504,8 +504,7 @@ class JustWatchChrome {
                 + offer.monetization_type + ' ' + offer.presentation_type+'</span>  <span class="price">' 
                 + ((typeof offer.retail_price !== 'undefined')? offer.retail_price :'0')+''
                 + ( (typeof offer.currency !== 'undefined')?
-                    ((typeof currency[offer.currency] !== 'undefined')? currency[offer.currency] : offer.currency ) 
-                    : '-' ) 
+                    (currency[offer.currency] || offer.currency ) : '-' ) 
                 +'</span></a></li>\n');
         }
 

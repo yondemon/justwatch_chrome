@@ -44,6 +44,7 @@
   min-height: 5rem;
   width: 3.4rem;
   display: inline-block;
+  overflow: hidden;
 }
 
 .justwatch .justwatch-offers ul li:not(.cheapest){
@@ -54,6 +55,7 @@
   height: 3.4rem;
   width: 3.4rem;
   /*border: 1px solid #6d6d6d;*/
+  background-color: #6d6d6d;
   border-radius: 11px;
   display: block;
 }
