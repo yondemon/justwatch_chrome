@@ -3,10 +3,10 @@ This browser extension is an unofficial wrapper of JustWatch service to show ava
 It works on the next Movie / TV shows related web pages:
 * [imdb.com](https://imdb.com)
 * [rottentomatoes.com](https://www.rottentomatoes.com)
-* [tv.com](http://www.tv.com/)
+* ~~[tv.com](http://www.tv.com/)~~
 * [sensacine.com](http://www.sensacine.com/)
 * [filmaffinity.com](https://www.filmaffinity.com/)
-* [cinefilica.es](https://cinefilica.es/)
+* ~~[cinefilica.es](https://cinefilica.es/)~~
 * [ecartelera.com](https://www.ecartelera.com/)
 * [themoviedb.org](https://www.themoviedb.org/)
 * [abc.es/play/](https://www.abc.es/play/)
@@ -22,18 +22,93 @@ It works on the next Movie / TV shows related web pages:
 
 If you want another web to be added, please, open an issue (or if you are a developer, I am open to pull requests. Instructions below).
 
-Right now it gets info for this countries:
-* USA
-* Canada
-* España
-* Deutschland
-* Japan
-* Mexico
-* Brazil
+Right now it gets info for all the countries on [JustWatch](https://www.justwatch.com/) at this moment:
+* Algeria
 * Argentina
 * Australia
+* Austria
+* Bahamas
+* Bahrain
+* Barbados
+* Belgium
+* Bermuda
+* Bolivia
+* Brasil
+* Bulgaria
+* Canada
+* Chile
+* Colombia
+* Costa Rica
+* Croatia
+* Czech Republic
+* Denmark
+* Deutschland
+* Dominican Republic
+* Ecuador
+* Egypt
+* El Salvador
+* España
+* Estonia
+* Finland
+* France
+* French Guiana
+* Gibraltar
+* Greece
+* Guatemala
+* Honduras
+* Hong Kong
+* Hungary
+* Iceland
+* India
+* Indonesia
+* Ireland
+* Italia
+* Jamaica
+* Japan
+* Jordan
+* Kuwait
+* Latvia
+* Libya
+* Liechtenstein
+* Lithuania
+* Malaysia
+* Mexico
+* Moldova
+* Monaco
+* Morocco
+* Netherlands
+* New Zealand
+* Norway
+* Oman
+* Panama
+* Paraguay
+* Peru
+* Philippines
+* Poland
+* Portugal
+* Qatar
+* Romania
+* Russia
+* San Marino
+* Saudi Arabia
+* Singapore
+* Slovakia
+* South Africa
+* South Korea
+* Sweden
+* Switzerland
+* Taiwan
+* Thailand
+* Tunisia
+* Turkey
+* United Arab Emirates
+* United Kingdom
+* USA
+* Uruguay
+* Venezuela
+* Yemen
 
-[JustWatch](https://www.justwatch.com/) has info from more than 30 countries... you can ask me for the next to wrap.
+Some of them still are missing logos for providers.
 
 ## How to install ##
 Beacuse this extension is not in the "markets" you have to install by yourself in your browser.
