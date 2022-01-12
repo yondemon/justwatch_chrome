@@ -5,6 +5,7 @@ var debug = false;
 var l18n = 'es_ES';
 const API_DOMAIN = 'apis.justwatch.com';
 const DOMAIN = 'justwatch.com';
+const IMAGES_DOMAIN = 'images.justwatch.com';
 
 class JustWatchChrome {
 
@@ -24,6 +25,8 @@ class JustWatchChrome {
     this.noMatchesP.setAttribute('id','justwatch-nomatches');
     this.noMatchesP.classList.add('message');
     this.noMatchesP.innerHTML = 'NO MATCHES';
+
+    this.providers = [];
   }
 
   execute() {
@@ -167,6 +170,20 @@ class JustWatchChrome {
 
     }
 
+  }
+
+  getProviders(){
+    chrome.runtime.sendMessage(
+      {
+        type: "fetchProvidersAPI",
+        data: {
+          localization: l18n,
+        },
+      },
+      (result) => {
+        if(debug) console.log("providers", result);
+        this.providers = result;
+      });
   }
 
   extractYear(string){
@@ -495,9 +512,17 @@ class JustWatchChrome {
   }
 
   providerLogoURL(provider_id){
-    if(typeof providers[provider_id] != "undefined"){
-      return chrome.runtime.getURL('providers/'+providers[provider_id]+'.jpeg');
+    // JUSTWATCH
+    var provider = this.providers.find((provider) => provider.id === provider_id);
+    if (provider != undefined){
+      var providerLogoUrl = provider.icon_url.replace("{profile}", "s100");
+      var logoURL =  `https://${IMAGES_DOMAIN}${providerLogoUrl}`;
+      return logoURL;
     }
+    // LOCAL    
+    // if(typeof providers[provider_id] != "undefined"){
+    //   return chrome.runtime.getURL('providers/'+providers[provider_id]+'.jpeg');  
+    // }
     return false;
   }
 
@@ -533,6 +558,8 @@ document.body.onload = function(){
       if (typeof value['justwatch-l18n'] != 'undefined'){
         l18n = value['justwatch-l18n'];
       }
+
+      plugin.getProviders();
 
       var waitForSelector = plugin.getWaitForSelector();
 
