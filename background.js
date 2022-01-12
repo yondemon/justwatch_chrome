@@ -10,10 +10,8 @@ chrome.runtime.onMessage.addListener(function(message, sender, callback) {
 
       var xhr = new XMLHttpRequest();
         
-        //var url = 'https://api.justwatch.com/titles/'+localization+'/popular';
-        //var url = 'https://'+API_DOMAIN+'/titles/'+localization+'/popular';
         // https://apis.justwatch.com/content/titles/es_ES/popular
-        var url = 'https://'+API_DOMAIN+'/content/titles/'+data.localization+'/popular';
+        var url = `https://${API_DOMAIN}/content/titles/${data.localization}/popular`;
         //if (debug) console.log(url);
 
         xhr.open("POST", url, true);

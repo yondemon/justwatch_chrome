@@ -416,98 +416,64 @@ class JustWatchChrome {
 
         presentationTypes[offer.presentation_type] = true;
         var cheapest = false;
+        var linkText = `<span class="provider provider-${offer.provider_id}">${logo}</span>`
+          + `<span class="presentation">${offer.presentation_type}</span>`;
 
         switch(offer.monetization_type){
-          case 'flatrate':
-            
+          case 'flatrate':            
             if(typeof offersData[offer.monetization_type][offer.provider_id] == 'undefined'){
               this.setCheapestOffer(offer,offersDiv,offersData);
               cheapest = true;
             }
-
-            ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
-              '<li id="offer-'+index+'" '
-                + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
-                +    ' provider-'+offer.provider_id+' '+(cheapest?'cheapest':'')+'"><a href="' + url
-                + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
-                + offer.presentation_type + '</span></a></li>\n');
-              break;
+            break;
 
           case 'rent':
-
             if(typeof offersData[offer.monetization_type][offer.provider_id] == 'undefined' 
               || offer.retail_price < offersData[offer.monetization_type][offer.provider_id]['cheapest_price'] ){
               this.setCheapestOffer(offer,offersDiv,offersData);
               cheapest = true;
             }
 
-            ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
-              '<li id="offer-'+index+'" '
-                + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
-                +    ' provider-'+offer.provider_id+' '+(cheapest?'cheapest':'')+'"><a href="' + url
-                + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
-                + offer.presentation_type + '</span>  <span class="price">' 
-                + offer.retail_price + ' ' + (currency[offer.currency] || offer.currency ) + '</span></a></li>\n');
-              break;
+            linkText = linkText + `<span class="price">${offer.retail_price} ${(currency[offer.currency] || offer.currency )}</span>`;
+            break;
 
           case 'buy':
-
             if(typeof offersData[offer.monetization_type][offer.provider_id] == 'undefined' 
               || offer.retail_price < offersData[offer.monetization_type][offer.provider_id]['cheapest_price'] ){
               this.setCheapestOffer(offer,offersDiv,offersData);
               cheapest = true;
             }
 
-            ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
-              '<li id="offer-'+index+'" '
-                + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
-                +    ' provider-'+offer.provider_id+' '+(cheapest?'cheapest':'')+'"><a href="' + url
-                + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
-                + offer.presentation_type + '</span>  <span class="price">' 
-                + offer.retail_price + ' ' + (currency[offer.currency] || offer.currency ) + '</span></a></li>\n');
-              break;
+            linkText = linkText + `<span class="price">${offer.retail_price} ${(currency[offer.currency] || offer.currency )}</span>`;
+            break;
 
           case 'free':
+            cheapest = true;
+            break;
 
-            ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
-              '<li id="offer-'+index+'" '
-                + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
-                +    ' provider-'+offer.provider_id+' cheapest"><a href="' + url
-                + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
-                + offer.presentation_type + '</span></a></li>\n');
-              break;
           case 'cinema':
-            ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
-              '<li id="offer-'+index+'" '
-                + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
-                +    ' provider-'+offer.provider_id+' cheapest"><a href="' + url
-                + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
-                + offer.presentation_type + '</span></a></li>\n');
-              break;
+            cheapest = true;
+            break;
 
           case 'ads':
-            ulBlocks[offer.monetization_type].insertAdjacentHTML('beforeend',
-              '<li id="offer-'+index+'" '
-                + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
-                +    ' provider-'+offer.provider_id+' cheapest"><a href="' + url
-                + '"><span class="provider provider-'+offer.provider_id+'">' + logo + '</span> <span class="presentation">' 
-                + offer.presentation_type + '</span></a></li>\n');
-              break;
-
+            cheapest = true;
+            break;
 
           default:
-            ulBlocks['other'].insertAdjacentHTML('beforeend',
-              '<li id="offer-'+index+'" '
-                + 'class="monetization-'+offer.monetization_type+' presentation-'+offer.presentation_type+' '
-                +    ' provider-'+offer.provider_id+' cheapest"><a href="' + url
-                + '"><span class="provider provider-'+offer.provider_id+'">'+logo+'</span>  <span class="presentation">' 
-                + offer.monetization_type + ' ' + offer.presentation_type+'</span>  <span class="price">' 
-                + ((typeof offer.retail_price !== 'undefined')? offer.retail_price :'0')+''
-                + ( (typeof offer.currency !== 'undefined')?
-                    (currency[offer.currency] || offer.currency ) : '-' ) 
-                +'</span></a></li>\n');
+            cheapest = true;
+            linkText = linkText + `<span class="price">${offer.retail_price || 0} ${(offer.currency !== undefined?
+                (currency[offer.currency] || offer.currency ) 
+                : '-' )}</span>`;
+            break;
         }
 
+        ulBlocks[offer.monetization_type || 'other'].insertAdjacentHTML('beforeend',
+          `<li id="offer-${index}" `
+            + `class="monetization-${offer.monetization_type} presentation-${offer.presentation_type} `
+            + `provider-${offer.provider_id} ${cheapest?'cheapest':''}">`
+            + `<a href="${url}" target="_blank">`
+            + linkText
+            + '</a></li>\n');
       }
 
       for (var block in ulBlocks) {
