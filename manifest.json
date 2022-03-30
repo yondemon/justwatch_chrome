@@ -25,11 +25,8 @@
       "matches": [
         "https://*.imdb.com/title/*",
         "https://www.rottentomatoes.com/m/*",
-        "http://www.tv.com/movies/*", "http://www.tv.com/shows/*",
         "https://www.sensacine.com/peliculas/*", "https://www.sensacine.com/series/*",
         "https://www.filmaffinity.com/*/film*",
-        // "http://www.fotogramas.es/Peliculas/*",
-        "https://cinefilica.es/titles/*",
         "https://www.ecartelera.com/peliculas/*", "https://www.ecartelera.com/series/*",
         "https://www.themoviedb.org/movie/*","https://www.themoviedb.org/tv/*",
         "https://www.abc.es/play/pelicula/*",
