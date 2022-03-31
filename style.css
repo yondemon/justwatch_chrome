@@ -1,6 +1,7 @@
 .justwatch {
   margin-bottom: 1rem;
   width: 100%;
+  position: relative;
 }
 
 .justwatch p {
