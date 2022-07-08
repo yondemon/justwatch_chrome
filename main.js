@@ -162,7 +162,7 @@ class JustWatchChrome {
               localization: l18n
             }
           }, 
-          function(response) {
+          (response) => {
             if (debug) console.log(response);
             $this.printPanel(response, div);
           });
