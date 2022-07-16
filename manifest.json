@@ -42,6 +42,8 @@
         "https://simkl.com/movies/*", "https://simkl.com/tv/*",
         "https://www.criticker.com/film/*", "https://www.criticker.com/tv/*",
         "https://moviechat.org/*",
+        "https://www.listal.com/movie/*",
+        "https://reelgood.com/movie/*",
 
         "https://www.netflix.com/title/*",
         "https://www.primevideo.com/detail/*",
