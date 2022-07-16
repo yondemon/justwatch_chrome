@@ -41,6 +41,7 @@
         "https://www.thetvdb.com/series/*",
         "https://simkl.com/movies/*", "https://simkl.com/tv/*",
         "https://www.criticker.com/film/*", "https://www.criticker.com/tv/*",
+        "https://moviechat.org/*",
 
         "https://www.netflix.com/title/*",
         "https://www.primevideo.com/detail/*",
